@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<main class="post-shell">
+  <article>
+    <header class="post-header">
+      <div class="post-meta">
+        <span class="stamp">{{ post.status }}</span>
+        <span>NOTE {{ post.serial }}</span>
+        <time datetime="{{ post.date_iso }}">{{ post.date_display }}</time>
+        <span>{{ post.category }}</span>
+      </div>
+      <h1>{{ post.title }}</h1>
+      <p class="deck">{{ post.summary }}</p>
+    </header>
+
+    <div class="post-body">
+      {{ post.body_html | safe }}
+      <aside class="evidence-box">
+        <p><strong>证据边界：</strong>{{ post.boundary }}</p>
+        {% if post.external_url %}
+        <p><a href="{{ post.external_url }}">公开证据 / 源码 ↗</a></p>
+        {% endif %}
+      </aside>
+      <a class="back-link" href="/">← 返回记录</a>
+    </div>
+  </article>
+</main>
+{% endblock %}

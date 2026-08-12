@@ -1,0 +1,117 @@
+:root {
+  --paper: #111111;
+  --ink: #e8e0cf;
+  --faded: #aaa59b;
+  --rule: #57544d;
+  --red: #dc665b;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: "Noto Serif CJK SC", "Songti SC", serif;
+  font-size: 17px;
+  text-rendering: optimizeLegibility;
+}
+a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.masthead {
+  width: min(1220px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 22px 0 18px;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--ink);
+  font-family: "Noto Sans CJK SC", sans-serif;
+  font-size: 13px;
+}
+.masthead .name { font-size: 16px; font-weight: 800; text-decoration: none; letter-spacing: -.02em; }
+.masthead nav { display: flex; gap: 28px; }
+main { width: min(1220px, calc(100% - 48px)); margin: 0 auto; }
+.opening { min-height: 72vh; padding: 12vh 0 7vh; position: relative; }
+.kicker, .eyebrow, .serial, .note-meta, time, footer {
+  font-family: "Noto Sans CJK SC", sans-serif;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.kicker { margin: 0 0 28px; color: var(--red); font-size: 12px; font-weight: 800; }
+h1 { margin: 0; max-width: 980px; font-size: clamp(58px, 10.5vw, 148px); line-height: .96; letter-spacing: -.075em; font-weight: 600; }
+.opening-note { position: absolute; right: 0; bottom: 7vh; width: min(360px, 40%); border-top: 1px solid; padding-top: 12px; display: grid; grid-template-columns: 44px 1fr; gap: 15px; }
+.opening-note span { color: var(--red); font-family: sans-serif; }
+.opening-note p { margin: 0; line-height: 1.75; font-size: 15px; }
+.lead-note { display: grid; grid-template-columns: 1fr 3fr; gap: 6vw; padding: 70px 0 100px; border-top: 4px solid; }
+.note-meta { display: flex; flex-direction: column; gap: 16px; font-size: 11px; color: var(--faded); }
+.stamp { width: fit-content; padding: 5px 8px 4px; color: var(--red); border: 1px solid var(--red); }
+.serial { color: var(--red); font-size: 12px; }
+.title-link { text-decoration: none; }
+h2 { margin: 8px 0 30px; max-width: 920px; font-size: clamp(38px, 6vw, 74px); line-height: 1.09; letter-spacing: -.045em; font-weight: 600; }
+.deck { max-width: 790px; font-size: clamp(20px, 2.2vw, 28px); line-height: 1.7; }
+.finding { margin: 52px 0 38px; padding: 26px 0; display: grid; grid-template-columns: 1.1fr 2fr; gap: 40px; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+.finding b { color: var(--red); font-family: "Noto Sans CJK SC", sans-serif; font-size: clamp(64px, 10vw, 126px); line-height: .9; letter-spacing: -.07em; }
+.finding p { margin: 0; max-width: 580px; align-self: center; line-height: 1.8; }
+.boundary { max-width: 790px; color: var(--faded); line-height: 1.8; }
+.notes { border-top: 1px solid var(--ink); }
+.note { display: grid; grid-template-columns: 90px 1fr 72px; gap: 26px; padding: 44px 0 52px; border-bottom: 1px solid var(--rule); }
+.note-index { color: var(--red); font: 700 34px/1 "Noto Sans CJK SC", sans-serif; }
+.note h3 { margin: 6px 0 15px; max-width: 830px; font-size: clamp(27px, 3.6vw, 46px); line-height: 1.25; letter-spacing: -.035em; }
+.note h3 a { text-decoration: none; }
+.note p:not(.eyebrow) { max-width: 760px; line-height: 1.8; }
+.eyebrow { margin: 0; color: var(--faded); font-size: 11px; }
+.note time { text-align: right; font-size: 11px; color: var(--faded); }
+.verdict { font-size: 14px; color: var(--faded); }
+.verdict span { margin-right: 12px; padding-bottom: 2px; color: var(--red); border-bottom: 2px solid var(--red); font: 800 11px "Noto Sans CJK SC", sans-serif; letter-spacing: .08em; }
+.links { display: flex; gap: 20px; font-size: 14px; font-family: "Noto Sans CJK SC", sans-serif; }
+.method { padding: 110px 0; }
+blockquote { margin: 20px 0 60px; max-width: 980px; font-size: clamp(38px, 6.8vw, 88px); line-height: 1.12; letter-spacing: -.05em; }
+.method-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; border-top: 1px solid; padding-top: 20px; }
+.method-grid p { margin: 0; line-height: 1.7; }
+.method-grid b { font-family: "Noto Sans CJK SC", sans-serif; color: var(--red); }
+footer { padding: 20px 24px; display: flex; justify-content: space-between; color: var(--faded); background: var(--paper); border-top: 1px solid var(--rule); font-size: 10px; }
+
+.archive { width: min(1040px, calc(100% - 96px)); min-height: calc(100vh - 120px); padding: 6vh 0 14vh; }
+.archive-title { margin: 0 0 16px; color: var(--faded); font: 700 12px/1 "Noto Sans CJK SC", sans-serif; letter-spacing: .12em; }
+.archive-list { width: 100%; border: 1px solid var(--rule); }
+.archive-row { display: block; padding: 17px 20px 16px; border-bottom: 1px solid var(--rule); text-decoration: none; transition: color 120ms ease, background-color 120ms ease; }
+.archive-row:last-child { border-bottom: 0; }
+.archive-row h2 { margin: 0; max-width: none; font-size: clamp(17px, 1.25vw, 21px); line-height: 1.38; letter-spacing: -.008em; font-weight: 500; }
+.archive-row:hover, .archive-row:focus-visible { color: var(--paper); background: var(--ink); outline: none; }
+
+.post-shell { max-width: 900px; padding: 6vh 0 90px; }
+.post-header { padding-bottom: 38px; border-bottom: 3px solid var(--ink); }
+.post-header h1 { margin: 16px 0 20px; max-width: 840px; font-size: clamp(28px, 2.7vw, 38px); line-height: 1.23; letter-spacing: -.024em; }
+.post-header .deck { max-width: 810px; margin-bottom: 0; font-size: clamp(16px, 1.4vw, 19px); }
+.post-meta { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; color: var(--faded); font: 11px "Noto Sans CJK SC", sans-serif; letter-spacing: .08em; text-transform: uppercase; }
+.post-body { max-width: 810px; margin: 34px auto 0; font-size: 16.5px; line-height: 1.76; }
+.post-body h2 { margin: 38px 0 12px; font-size: 25px; line-height: 1.32; letter-spacing: -.015em; }
+.post-body h3 { margin: 32px 0 12px; font-size: 21px; }
+.post-body p, .post-body ul, .post-body ol { margin: 0 0 19px; }
+.post-body li { margin: 8px 0; }
+.post-body strong { color: var(--ink); }
+.post-body code { padding: 2px 5px; color: var(--ink); background: #242424; font-size: .88em; }
+.post-body pre { margin: 34px 0; padding: 20px; overflow-x: auto; border: 1px solid var(--rule); background: #0b0b0b; line-height: 1.55; }
+.post-body pre code { padding: 0; background: transparent; }
+.evidence-box { margin-top: 72px; padding: 24px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); color: var(--faded); line-height: 1.8; }
+.evidence-box p { margin: 0 0 10px; }
+.back-link { display: inline-block; margin-top: 54px; font-family: "Noto Sans CJK SC", sans-serif; font-size: 13px; }
+.not-found { min-height: 75vh; display: grid; align-content: center; }
+.not-found h1 { color: var(--red); }
+.not-found p { font-size: 22px; }
+
+@media (max-width: 720px) {
+  body { font-size: 15px; }
+  .masthead, main { width: min(100% - 30px, 1220px); }
+  .masthead nav { gap: 14px; }
+  .masthead nav a:first-child { display: none; }
+  .opening { min-height: 620px; padding-top: 11vh; }
+  .opening-note { width: 78%; left: 0; right: auto; }
+  .lead-note { grid-template-columns: 1fr; padding-top: 45px; }
+  .note-meta { flex-direction: row; flex-wrap: wrap; align-items: center; }
+  .finding { grid-template-columns: 1fr; }
+  .note { grid-template-columns: 48px 1fr; gap: 15px; }
+  .note time { grid-column: 2; grid-row: 1; text-align: left; margin-bottom: 28px; }
+  .note > div:nth-child(2) { grid-column: 1 / -1; }
+  .method-grid { grid-template-columns: 1fr; gap: 22px; }
+  footer { flex-direction: column; gap: 8px; }
+}

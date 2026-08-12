@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="{{ site.language }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="{{ description }}">
+  <meta name="color-scheme" content="dark">
+  <link rel="canonical" href="{{ canonical }}">
+  <link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="/feed.xml">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/style.css">
+  <title>{{ page_title }}</title>
+</head>
+<body>
+  <header class="masthead">
+    <a class="name" href="/">{{ site.title }}</a>
+    <nav aria-label="主导航">
+      <a href="/">记录</a>
+      <a href="/feed.xml">RSS</a>
+      <a href="{{ site.github_url }}">GitHub ↗</a>
+    </nav>
+  </header>
+
+  {% block content %}{% endblock %}
+
+  <footer>
+    <span>{{ site.author }} / somewhere in Asia</span>
+    <span>No analytics. No newsletter. <a href="/feed.xml">RSS</a></span>
+  </footer>
+</body>
+</html>
