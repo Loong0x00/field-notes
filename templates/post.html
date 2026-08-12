@@ -21,8 +21,22 @@
         <p><a href="{{ post.external_url }}">公开证据 / 源码 ↗</a></p>
         {% endif %}
       </aside>
+
+      <section class="discussion" data-discussion data-article-key="{{ post.slug }}" aria-labelledby="discussion-title">
+        <header class="discussion-header">
+          <div>
+            <p class="discussion-label">DISCUSSION</p>
+            <h2 id="discussion-title">讨论</h2>
+          </div>
+          <div class="discussion-identity" data-discussion-identity>正在连接讨论服务……</div>
+        </header>
+        <div class="discussion-notice" data-discussion-notice hidden></div>
+        <div class="discussion-compose" data-root-composer hidden></div>
+        <div class="comment-tree" data-comment-tree aria-live="polite"></div>
+      </section>
       <a class="back-link" href="/">← 返回记录</a>
     </div>
   </article>
 </main>
 {% endblock %}
+{% block scripts %}<script src="/discussion.js" defer></script>{% endblock %}

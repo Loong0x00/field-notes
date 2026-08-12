@@ -99,11 +99,78 @@ footer { padding: 20px 24px; display: flex; justify-content: space-between; colo
 .not-found h1 { color: var(--red); }
 .not-found p { font-size: 22px; }
 
+button, input, textarea { font: inherit; }
+button {
+  padding: 8px 13px;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--rule);
+  cursor: pointer;
+}
+button:hover, button:focus-visible { color: var(--paper); background: var(--ink); outline: none; }
+button:disabled { opacity: .45; cursor: wait; }
+input, textarea {
+  width: 100%;
+  padding: 9px 10px;
+  color: var(--ink);
+  background: #181818;
+  border: 1px solid var(--rule);
+  border-radius: 0;
+}
+input:focus, textarea:focus { border-color: var(--ink); outline: none; }
+textarea { min-height: 112px; resize: vertical; line-height: 1.55; }
+
+.discussion { margin-top: 78px; padding-top: 20px; border-top: 3px solid var(--ink); }
+.discussion-header { display: flex; justify-content: space-between; gap: 28px; align-items: flex-start; margin-bottom: 22px; }
+.discussion-header h2 { margin: 3px 0 0; font-size: 25px; }
+.discussion-label { margin: 0; color: var(--red); font: 800 10px/1 "Noto Sans CJK SC", sans-serif; letter-spacing: .12em; }
+.discussion-identity { color: var(--faded); font: 12px/1.6 "Noto Sans CJK SC", sans-serif; text-align: right; }
+.discussion-identity button { margin-left: 9px; padding: 4px 8px; font-size: 11px; }
+.discussion-notice { margin: 14px 0; padding: 10px 12px; color: var(--ink); border-left: 3px solid var(--red); background: #1b1b1b; font-size: 13px; }
+.discussion-notice[data-kind="error"] { color: #f1a39c; }
+.discussion-compose { margin: 20px 0 28px; padding: 16px; border: 1px solid var(--rule); }
+.comment-form { display: grid; gap: 10px; }
+.comment-form-actions { display: flex; flex-wrap: wrap; gap: 9px; align-items: center; }
+.comment-form input[type="file"] { max-width: 390px; padding: 6px; font-size: 12px; }
+.comment-form-note, .upload-list { margin: 0; color: var(--faded); font: 11px/1.55 "Noto Sans CJK SC", sans-serif; }
+.comment-tree { border-top: 1px solid var(--rule); }
+.comment-empty { margin: 0; padding: 26px 0; color: var(--faded); }
+.comment-branch { margin-left: calc(var(--depth, 0) * 18px); border-left: 1px solid var(--rule); }
+.comment-card { padding: 15px 0 14px 14px; border-bottom: 1px solid var(--rule); }
+.comment-meta { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: baseline; color: var(--faded); font: 10px/1.45 "Noto Sans CJK SC", sans-serif; letter-spacing: .04em; }
+.comment-author { color: var(--ink); font-size: 12px; font-weight: 700; letter-spacing: 0; }
+.comment-role { color: var(--red); }
+.comment-body { margin: 10px 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.65; }
+.comment-tombstone { color: var(--faded); font-style: italic; }
+.comment-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.comment-actions button { padding: 0; color: var(--faded); border: 0; font-size: 11px; }
+.comment-actions button:hover, .comment-actions button:focus-visible { color: var(--ink); background: transparent; text-decoration: underline; }
+.comment-attachments { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 12px 0; }
+.comment-attachments a { display: block; border: 1px solid var(--rule); }
+.comment-attachments img { display: block; width: 100%; max-height: 420px; object-fit: contain; background: #0b0b0b; }
+.attachment-keep { display: flex; gap: 8px; align-items: center; font-size: 12px; }
+.attachment-keep input { width: auto; }
+
+.account-shell { max-width: 1040px; min-height: calc(100vh - 120px); padding: 7vh 0 12vh; }
+.account-header { padding-bottom: 26px; border-bottom: 3px solid var(--ink); }
+.account-header h1 { margin: 10px 0 16px; font-size: clamp(32px, 4vw, 54px); letter-spacing: -.035em; }
+.account-header p:last-child { max-width: 620px; color: var(--faded); line-height: 1.7; }
+.account-current { padding: 18px 0; font: 13px/1.6 "Noto Sans CJK SC", sans-serif; }
+.account-current button { margin-left: 12px; }
+.account-grid { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--rule); border-left: 1px solid var(--rule); }
+.account-panel { padding: 20px; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+.account-panel h2, .recovery-result h2 { margin: 0 0 18px; font-size: 20px; }
+.account-panel form { display: grid; gap: 13px; }
+.account-panel label { display: grid; gap: 6px; color: var(--faded); font: 11px/1.4 "Noto Sans CJK SC", sans-serif; }
+.field-note { margin: -5px 0 2px; color: var(--faded); font-size: 11px; line-height: 1.55; }
+.recovery-result { margin-top: 24px; padding: 22px; border: 1px solid var(--red); }
+.recovery-result code { display: block; margin: 18px 0; padding: 13px; overflow-wrap: anywhere; color: var(--ink); background: #080808; font-size: 17px; letter-spacing: .08em; }
+
 @media (max-width: 720px) {
   body { font-size: 15px; }
   .masthead, main { width: min(100% - 30px, 1220px); }
   .masthead nav { gap: 14px; }
-  .masthead nav a:first-child { display: none; }
+  .masthead nav a:first-child, .masthead nav a:last-child { display: none; }
   .opening { min-height: 620px; padding-top: 11vh; }
   .opening-note { width: 78%; left: 0; right: auto; }
   .lead-note { grid-template-columns: 1fr; padding-top: 45px; }
@@ -114,4 +181,9 @@ footer { padding: 20px 24px; display: flex; justify-content: space-between; colo
   .note > div:nth-child(2) { grid-column: 1 / -1; }
   .method-grid { grid-template-columns: 1fr; gap: 22px; }
   footer { flex-direction: column; gap: 8px; }
+  .account-grid { grid-template-columns: 1fr; }
+  .discussion-header { display: block; }
+  .discussion-identity { margin-top: 13px; text-align: left; }
+  .comment-branch { margin-left: calc(var(--depth, 0) * 8px); }
+  .comment-attachments { grid-template-columns: 1fr; }
 }

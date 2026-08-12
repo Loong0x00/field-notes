@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<main class="account-shell" data-auth-page>
+  <header class="account-header">
+    <p class="discussion-label">DISCUSSION ACCOUNT</p>
+    <h1>讨论账户</h1>
+    <p>只需要用户名与密码。不收集邮箱、手机号或实名信息。</p>
+  </header>
+
+  <div class="account-current" data-account-current>正在连接讨论服务……</div>
+  <div class="discussion-notice" data-account-notice hidden></div>
+
+  <div class="account-grid" data-account-forms hidden>
+    <section class="account-panel">
+      <h2>登录</h2>
+      <form data-login-form>
+        <label>用户名<input name="username" autocomplete="username" required></label>
+        <label>密码<input name="password" type="password" autocomplete="current-password" required></label>
+        <div data-turnstile-login hidden></div>
+        <button type="submit">登录</button>
+      </form>
+    </section>
+
+    <section class="account-panel">
+      <h2>注册</h2>
+      <form data-register-form>
+        <label>用户名<input name="username" autocomplete="username" minlength="3" maxlength="24" pattern="[A-Za-z0-9_-]+" required></label>
+        <p class="field-note">3–24 位；英文字母、数字、下划线或连字符；不区分大小写。</p>
+        <label>密码<input name="password" type="password" autocomplete="new-password" minlength="10" maxlength="256" required></label>
+        <label>重复密码<input name="password_repeat" type="password" autocomplete="new-password" minlength="10" maxlength="256" required></label>
+        <div data-turnstile-register></div>
+        <button type="submit">注册</button>
+      </form>
+    </section>
+
+    <section class="account-panel">
+      <h2>恢复账户</h2>
+      <p class="field-note">没有邮箱找回。需要注册时保存的一次性恢复码。</p>
+      <form data-recover-form>
+        <label>用户名<input name="username" autocomplete="username" required></label>
+        <label>恢复码<input name="recovery_code" autocomplete="off" required></label>
+        <label>新密码<input name="password" type="password" autocomplete="new-password" minlength="10" maxlength="256" required></label>
+        <div data-turnstile-recover></div>
+        <button type="submit">重设密码</button>
+      </form>
+    </section>
+  </div>
+
+  <section class="recovery-result" data-recovery-result hidden>
+    <h2>保存恢复码</h2>
+    <p>它只显示这一次。密码和恢复码同时丢失后，账户无法恢复。</p>
+    <code data-recovery-code></code>
+    <button type="button" data-copy-recovery>复制恢复码</button>
+  </section>
+</main>
+{% endblock %}
+{% block scripts %}<script src="/discussion.js" defer></script>{% endblock %}

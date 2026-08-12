@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import datetime as dt
+import os
 import shutil
 from pathlib import Path
 
@@ -57,6 +58,8 @@ def write(path: Path, text: str) -> None:
 
 def main() -> None:
     site = yaml.safe_load((ROOT / "site.yml").read_text(encoding="utf-8"))
+    if comments_api := os.environ.get("COMMENTS_API_URL"):
+        site["comments_api"] = comments_api.rstrip("/")
     if not isinstance(site, dict) or not site.get("url"):
         raise ValueError("site.yml must define a public url")
     site["url"] = str(site["url"]).rstrip("/")
@@ -90,6 +93,7 @@ def main() -> None:
         shutil.rmtree(OUT)
     OUT.mkdir()
     shutil.copy2(ROOT / "assets" / "style.css", OUT / "style.css")
+    shutil.copy2(ROOT / "assets" / "discussion.js", OUT / "discussion.js")
     shutil.copy2(ROOT / "CNAME", OUT / "CNAME")
     (OUT / ".nojekyll").touch()
 
@@ -108,6 +112,14 @@ def main() -> None:
         canonical=f"{site['url']}/",
     )
     write(OUT / "index.html", index)
+
+    account = env.get_template("account.html").render(
+        **shared,
+        page_title=f"讨论账户 — {site['author']}",
+        description="注册、登录或恢复讨论账户。",
+        canonical=f"{site['url']}/account/",
+    )
+    write(OUT / "account" / "index.html", account)
 
     post_template = env.get_template("post.html")
     for post in posts:

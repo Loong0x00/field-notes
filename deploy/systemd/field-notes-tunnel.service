@@ -1,0 +1,27 @@
+[Unit]
+Description=Cloudflare Tunnel for Field Notes discussion API
+Documentation=https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/
+After=field-notes-comments.service
+Requires=field-notes-comments.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/cloudflared --no-autoupdate --config %h/.config/field-notes-comments/cloudflared.yml tunnel run
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=15s
+
+NoNewPrivileges=yes
+PrivateDevices=yes
+PrivateTmp=yes
+ProtectClock=yes
+ProtectControlGroups=yes
+ProtectKernelLogs=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictRealtime=yes
+LockPersonality=yes
+
+[Install]
+WantedBy=default.target

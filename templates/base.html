@@ -11,11 +11,12 @@
   <link rel="stylesheet" href="/style.css">
   <title>{{ page_title }}</title>
 </head>
-<body>
+<body data-comments-api="{{ site.comments_api }}">
   <header class="masthead">
     <a class="name" href="/">{{ site.title }}</a>
     <nav aria-label="主导航">
       <a href="/">记录</a>
+      <a href="/account/">讨论账户</a>
       <a href="/feed.xml">RSS</a>
       <a href="{{ site.github_url }}">GitHub ↗</a>
     </nav>
@@ -27,5 +28,6 @@
     <span>{{ site.author }} / somewhere in Asia</span>
     <span>No analytics. No newsletter. <a href="/feed.xml">RSS</a></span>
   </footer>
+  {% block scripts %}{% endblock %}
 </body>
 </html>

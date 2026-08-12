@@ -46,8 +46,8 @@ def target_for(source: Path, url: str) -> Path | None:
 def main() -> None:
     failures: list[str] = []
     html_files = sorted(PUBLIC.rglob("*.html"))
-    if len(html_files) < 2:
-        failures.append(f"expected homepage and 404; found {len(html_files)} HTML files")
+    if len(html_files) < 3:
+        failures.append(f"expected homepage, account and 404; found {len(html_files)} HTML files")
     for path in html_files:
         text = path.read_text(encoding="utf-8")
         if "{{" in text or "{%" in text:
