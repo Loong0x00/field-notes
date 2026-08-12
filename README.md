@@ -1,7 +1,8 @@
 # Field Notes
 
-A Markdown-driven site for GitHub Pages. Articles remain static and readable
-when the optional discussion service is unavailable. The site has no analytics,
+A Markdown-driven personal site deployed as one managed edge application. Static
+pages and the discussion API share the same origin; D1 stores accounts and
+threaded comments, and R2 stores image attachments. The site has no analytics,
 newsletter or CMS.
 
 ## Write
@@ -15,23 +16,23 @@ the same post metadata.
 
 ```bash
 python -m pip install -r requirements.txt
-python build.py
-python scripts/check_site.py
-python -m http.server 4173 --directory public
+npm ci
+npm run check
+npx wrangler d1 migrations apply field-notes-local --local --config wrangler.jsonc
+npx wrangler dev --config wrangler.jsonc
 ```
 
-Then open <http://127.0.0.1:4173/>.
+Then open <http://127.0.0.1:8787/>. With the development server running, use
+`npm run test:e2e` to exercise same-origin protection, accounts, password
+recovery, comments, replies, image storage, editing and deletion against real
+local D1/R2 bindings.
 
-To point a local build at a local discussion service, set
-`COMMENTS_API_URL=http://127.0.0.1:8090` when running `build.py`. See
-[`server/README.md`](server/README.md) for the account, nested-reply and image
-service.
-
-`build.py` replaces only the generated `public/` directory. GitHub Actions runs
-the same build and check commands, uploads `public/`, and deploys it through
-GitHub Pages.
+`build.py` replaces only the generated `public/` directory. `npm run build`
+then bundles that output and the Worker into `dist/`.
 
 ## Publish
 
-The repository is `Loong0x00/field-notes`. GitHub Actions deploys `public/` to
-GitHub Pages, and `loong0x00.com` is the canonical custom domain.
+The repository is `Loong0x00/field-notes`. OpenAI Sites owns the production
+Worker, D1 database, R2 bucket and custom-domain deployment for
+`loong0x00.com`. GitHub Actions validates source changes but does not publish
+the site.
