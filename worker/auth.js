@@ -24,7 +24,8 @@ import {
 } from "./utils.js";
 
 const USERNAME = /^[A-Za-z0-9_-]{3,24}$/;
-const PASSWORD_ITERATIONS = 120_000;
+// Cloudflare Workers Web Crypto currently caps PBKDF2 at 100,000 rounds.
+const PASSWORD_ITERATIONS = 100_000;
 const encoder = new TextEncoder();
 const BASE32 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
@@ -65,7 +66,7 @@ export async function hashPassword(password) {
 export async function verifyPassword(encoded, password) {
   const [algorithm, iterationsText, saltText, hashText] = String(encoded).split("$");
   const iterations = Number(iterationsText);
-  if (algorithm !== "pbkdf2-sha256" || !Number.isInteger(iterations) || iterations < 100_000 || iterations > 1_000_000) {
+  if (algorithm !== "pbkdf2-sha256" || !Number.isInteger(iterations) || iterations !== PASSWORD_ITERATIONS) {
     return false;
   }
   try {

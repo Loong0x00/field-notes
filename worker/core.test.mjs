@@ -14,6 +14,7 @@ import { detectImage } from "./media.js";
 test("password hashing and validation", async () => {
   validatePassword("correct horse battery staple");
   const encoded = await hashPassword("correct horse battery staple");
+  assert.match(encoded, /^pbkdf2-sha256\$100000\$/);
   assert.equal(await verifyPassword(encoded, "correct horse battery staple"), true);
   assert.equal(await verifyPassword(encoded, "incorrect horse battery staple"), false);
   assert.throws(() => validatePassword("too short"), /10/);
