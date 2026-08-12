@@ -72,7 +72,12 @@ function addStaticSecurity(response) {
 
 export default {
   async fetch(request, env) {
-    const pathname = new URL(request.url).pathname;
+    const url = new URL(request.url);
+    if (url.hostname === "www.loong0x00.com") {
+      url.hostname = "loong0x00.com";
+      return secure(Response.redirect(url, 308));
+    }
+    const { pathname } = url;
     if (request.method === "OPTIONS" && isAPIPath(pathname)) return secure(new Response(null, { status: 204 }));
     if (!isAPIPath(pathname)) {
       if (!env.ASSETS) return secure(apiError(404, "not_found", "页面不存在。"));

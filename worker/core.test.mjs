@@ -10,6 +10,7 @@ import {
   verifyPassword,
 } from "./auth.js";
 import { detectImage } from "./media.js";
+import worker from "./index.js";
 
 test("password hashing and validation", async () => {
   validatePassword("correct horse battery staple");
@@ -36,4 +37,14 @@ test("image detector accepts PNG metadata and rejects fake files", () => {
   ]);
   assert.deepEqual(detectImage(png), { mediaType: "image/png", width: 2, height: 3 });
   assert.throws(() => detectImage(new TextEncoder().encode("<script>alert(1)</script>")), /JPEG、PNG 或 WebP/);
+});
+
+test("www host redirects to the canonical host", async () => {
+  const response = await worker.fetch(
+    new Request("https://www.loong0x00.com/account/?next=%2Fnotes%2F"),
+    {},
+  );
+  assert.equal(response.status, 308);
+  assert.equal(response.headers.get("Location"), "https://loong0x00.com/account/?next=%2Fnotes%2F");
+  assert.equal(response.headers.get("X-Content-Type-Options"), "nosniff");
 });
