@@ -4,3 +4,8 @@ output/
 __pycache__/
 *.pyc
 server/data/
+node_modules/
+dist/
+.wrangler/
+.env
+.dev.vars

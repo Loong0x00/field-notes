@@ -1,0 +1,24 @@
+{
+  "name": "field-notes",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "build": "python build.py && python scripts/check_site.py && node scripts/build-worker.mjs",
+    "db:generate": "drizzle-kit generate",
+    "test": "node --test worker/*.test.mjs",
+    "test:e2e": "node scripts/test-worker-e2e.mjs",
+    "check": "npm test && npm run build"
+  },
+  "dependencies": {
+    "drizzle-orm": "0.45.2"
+  },
+  "devDependencies": {
+    "drizzle-kit": "0.31.10",
+    "esbuild": "0.27.4",
+    "wrangler": "^4.122.0"
+  }
+}

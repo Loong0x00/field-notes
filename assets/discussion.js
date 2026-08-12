@@ -1,8 +1,8 @@
 (() => {
   "use strict";
 
-  const apiBase = document.body.dataset.commentsApi?.replace(/\/$/, "");
-  if (!apiBase) return;
+  const configuredApi = document.body.dataset.commentsApi?.trim();
+  const apiBase = configuredApi ? configuredApi.replace(/\/$/, "") : window.location.origin;
 
   class APIError extends Error {
     constructor(code, message, status) {
