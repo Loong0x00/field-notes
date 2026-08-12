@@ -63,8 +63,6 @@ def main() -> None:
             ET.parse(PUBLIC / name)
         except Exception as exc:
             failures.append(f"invalid {name}: {exc}")
-    if (PUBLIC / "CNAME").read_text(encoding="utf-8").strip() != "loong0x00.com":
-        failures.append("CNAME does not contain loong0x00.com")
     if failures:
         print("\n".join(f"ERROR: {item}" for item in failures), file=sys.stderr)
         raise SystemExit(1)

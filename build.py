@@ -95,7 +95,6 @@ def main() -> None:
     shutil.copy2(ROOT / "assets" / "style.css", OUT / "style.css")
     shutil.copy2(ROOT / "assets" / "discussion.js", OUT / "discussion.js")
     shutil.copy2(ROOT / "assets" / "og.png", OUT / "og.png")
-    shutil.copy2(ROOT / "CNAME", OUT / "CNAME")
     (OUT / ".nojekyll").touch()
 
     env = Environment(
