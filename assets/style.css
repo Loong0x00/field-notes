@@ -94,11 +94,12 @@ footer { padding: 20px 24px; display: flex; justify-content: space-between; colo
 .post-body pre code { padding: 0; background: transparent; }
 .post-body blockquote { margin: 0 0 32px; padding: 14px 18px; color: var(--faded); border-left: 3px solid var(--red); font-size: 15px; line-height: 1.7; letter-spacing: 0; }
 .post-body blockquote p:last-child { margin-bottom: 0; }
-.post-body table { width: 100%; margin: 30px 0; border-collapse: collapse; font-size: 14px; line-height: 1.55; }
+.post-body table { display: block; width: 100%; max-width: 100%; margin: 30px 0; overflow-x: auto; border-collapse: collapse; font-size: 14px; line-height: 1.55; }
 .post-body th, .post-body td { padding: 10px 12px; border: 1px solid var(--rule); text-align: left; vertical-align: top; }
 .post-body th { font-family: "Noto Sans CJK SC", sans-serif; font-size: 12px; letter-spacing: .03em; }
 .post-body th.align-right, .post-body td.align-right { text-align: right; }
 .post-body th.align-center, .post-body td.align-center { text-align: center; }
+.post-body img { display: block; width: 100%; height: auto; margin: 30px 0; border: 1px solid var(--rule); }
 .evidence-box { margin-top: 72px; padding: 24px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); color: var(--faded); line-height: 1.8; }
 .evidence-box p { margin: 0 0 10px; }
 .back-link { display: inline-block; margin-top: 54px; font-family: "Noto Sans CJK SC", sans-serif; font-size: 13px; }

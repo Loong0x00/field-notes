@@ -1,0 +1,16 @@
+sample,source_id,internal_version,sha256,factory_clock_delta_mhz,factory_vpstate_target_mhz,provenance
+ASUS TUF OC,TPU 273490,98.02.2E.00.AB,776ef836f0d1ee2e6e4cfb7c1f9f64784387d7b8e714b7e28042a679345ca7a8,0,0,verified local TPU corpus
+ASUS Astral OC,TPU 273693,98.02.2E.00.CF,c274ec136876852b74fec553275ab1d61025a986ccfc463c0fb0b290fa94c191,45,2580,verified local TPU corpus
+ASUS Astral LC OC,TPU 275809,98.02.2E.40.C0,e46c6b8d211c291e75787df49c77035ff13945431b96545fc34dc2c35e0919a2,45,2580,verified local TPU corpus
+Gigabyte Gaming OC,TPU 273491,98.02.2E.00.D4,193f102931c763d1b49b88dc8dccf25d5eac2f34d83573df2e11298bfd71dbaf,15,2550,verified local TPU corpus
+Inno3D X3,TPU 278098,98.02.2E.00.E4,3b6f9c8753ed913cd9634bbaf8f13c467c70299604db45b8ab881645cfe88a6f,0,0,verified local TPU corpus
+MSI Gaming Trio OC,TPU 273837,98.02.2E.00.FA,44ffb07ccba1a4dde043f92d6254c4c23156bbd29c844220c5e242562bc14dbf,15,2482,verified local TPU corpus
+Palit GameRock,TPU 273723,98.02.2E.00.91,f425342842d709b8446b23c3cb2cff43e092ffd036a9473399ae6af366dea85f,0,0,verified local TPU corpus
+Palit GameRock OC,TPU 274391,98.02.2E.00.92,079f7688bc0364b4d4bee56521567c9a6de57d63e463060dcbc0435e899b06f1,60,2527,verified local TPU corpus
+Zotac Solid,TPU 273696,98.02.2E.00.B1,c5000a969221e7ffd0ca6c0d9d179ea0a72350f27aa6f7084f1e4704339fb722,0,0,verified local TPU corpus
+GALAX RTX 5090D HOF OC LAB XOC 2001 W,TPU 277809,98.02.31.40.9A,915a8911e51a4c601112e97a370c8ad5744e4038eb275f31c086342c60f6a9ac,75,2610,verified local TPU corpus
+ASUS Matrix 800 W,TPU 280329,98.02.2E.80.C9,4c772b46b2df424b94c4c71fffece98da96375c5d2699ce0bfcd1a51828015dd,195,2730,verified local TPU corpus
+MSI Lightning 800 W,TPU 281640,98.02.2E.C0.0F,9ae22a0b80836ac80b60b4bcada3c1867daf224a645009225b2fd239d9751e0b,195,2730,verified local TPU corpus
+MSI Lightning 1000 W,TPU 281649,98.02.2E.C0.10,5dabed819ca9b8a63756444421c46287d95115d51c091fe95cd7594c50873abc,195,2730,verified local TPU corpus
+ASUS Astral 2001 W XOC,TPU 281814,98.02.2E.80.50,0a1a511e72d707f513aab02a1d1ccfa8a78347d56915b0c922398724193ec97d,45,2580,verified local TPU corpus and live STATUS source
+MSI Lightning 2500 W XOC,OCN-linked Drive / TPU association 281792,98.02.2E.80.E8,f0a45a81506f2deabc6ca6c39696d6e835f0ce2b88eeead8f58d16462205f84b,195,2730,verified local OCN-linked Drive file; TPU association is provenance only

@@ -429,6 +429,40 @@ The forum material should therefore be graded as a public multi-sample reproduct
 | melonVolt/NVAPI MSVDD offset | Driver-visible MSVDD request | Can raise XBAR indirectly through V/F/arbitration; constrained by voltage limits, curves, and sample |
 | This article's ClockClient XBAR offset | XBAR-domain frequency request, optionally with an MSVDD request | Directly controls the XBAR request; still constrained by actual arbitration, stability, and a private ABI |
 
+## Static FactoryOC comparison and the complete Astral 2001 W XOC V/F bank
+
+`FactoryOC` is a table inside the signed VBIOS image containing a factory clock delta and a factory vPstate target. It is not a stored 127-point curve, a voltage request, a hard frequency lock, or proof that the target frequency is stable. RM diagnostics describe the clock entry as a factory OC frequency delta and use it while constructing P-state frequency tuples. A zero in this table also does not prove that a board marketed as “OC” has no other base-table difference; it means only that this particular delta/target pair is not populated.
+
+The table below expands the comparison beyond Astral, Matrix, and Lightning. All values were decoded offline from 15 locally verified GB202 VBIOS images. Revisions with the same card identity and the same pair of values were collapsed. The downloadable CSV preserves the exact internal version, SHA-256, source identity, and provenance for every selected image.
+
+| Board / VBIOS sample | Internal version | Source identity | Factory clock delta | Factory vPstate target |
+|---|---|---|---:|---:|
+| ASUS TUF OC | `98.02.2E.00.AB` | TPU 273490 | 0 MHz | not populated |
+| ASUS Astral OC | `98.02.2E.00.CF` | TPU 273693 | +45 MHz | 2580 MHz |
+| ASUS Astral LC OC | `98.02.2E.40.C0` | TPU 275809 | +45 MHz | 2580 MHz |
+| Gigabyte Gaming OC | `98.02.2E.00.D4` | TPU 273491 | +15 MHz | 2550 MHz |
+| Inno3D X3 | `98.02.2E.00.E4` | TPU 278098 | 0 MHz | not populated |
+| MSI Gaming Trio OC | `98.02.2E.00.FA` | TPU 273837 | +15 MHz | 2482 MHz |
+| Palit GameRock | `98.02.2E.00.91` | TPU 273723 | 0 MHz | not populated |
+| Palit GameRock OC | `98.02.2E.00.92` | TPU 274391 | +60 MHz | 2527 MHz |
+| Zotac Solid | `98.02.2E.00.B1` | TPU 273696 | 0 MHz | not populated |
+| GALAX RTX 5090D HOF OC LAB XOC 2001 W | `98.02.31.40.9A` | TPU 277809 | +75 MHz | 2610 MHz |
+| ASUS Matrix 800 W | `98.02.2E.80.C9` | TPU 280329 | +195 MHz | 2730 MHz |
+| MSI Lightning 800 W | `98.02.2E.C0.0F` | TPU 281640 | +195 MHz | 2730 MHz |
+| MSI Lightning 1000 W | `98.02.2E.C0.10` | TPU 281649 | +195 MHz | 2730 MHz |
+| ASUS Astral 2001 W XOC | `98.02.2E.80.50` | TPU 281814 | +45 MHz | 2580 MHz |
+| MSI Lightning 2500 W XOC | `98.02.2E.80.E8` | OCN-linked file; TPU 281792 association | +195 MHz | 2730 MHz |
+
+The active Astral 2001 W XOC image was version `98.02.2E.80.50` under R610.57.04. Its read-only `NV2080_CTRL_CMD_CLK_VF_POINTS_GET_STATUS` capture contains exactly 127 XBAR records. Every record has a `+45 MHz` tuning term, and every effective frequency equals the decoded base frequency plus 45 MHz.
+
+Offline comparison also found that Astral 2001 W XOC and Lightning 2500 W XOC have byte-identical `PERFORMANCE`, `BOOST`, Clock Programming, Voltage Map v0x30, NAFLL, Frequency Controller, Base Clock, Voltage Device, Voltage Rail, and Voltage Policy inputs. Their relevant static curve-input difference is FactoryOC: `+45 MHz / 2580 MHz` versus `+195 MHz / 2730 MHz`. Holding the GPU, driver, temperature, fuse/speedo inputs, and generator behavior constant therefore gives a controlled Lightning projection exactly 150 MHz above the captured Astral curve. The projected endpoint is `1240 mV / 2962 MHz`; it is not a Lightning live capture and says nothing by itself about delivered voltage or stability.
+
+![GB202 XBAR V/F plot showing the decoded Astral base curve, the measured Astral 2001 W effective curve, and the explicitly marked conditional Lightning 2500 W projection.](/downloads/xbar/astral-2001w-xoc-r610.57.04-xbar-vf.png)
+
+The voltage column below is the effective-voltage field in the GSP STATUS object. It must not be relabelled as externally measured regulator VOUT. The raw CSV additionally preserves record offsets, the 16.16 base value, source-voltage field, duplicate fields, and both tuning offsets.
+
+[[data-table:astral-2001w-xbar-status]]
+
 ## What is confirmed and what is not
 
 **Confirmed:**
@@ -475,6 +509,9 @@ The compact [download index](/downloads/xbar/INDEX.md) maps every local research
 - [Finite DRAM-MAX to XBAR/power-feedback closure](/downloads/xbar/MEMORY_MAX_FEEDBACK_CLOSURE_20260728.md)
 - [XBAR runtime frequency and domain-voltage control](/downloads/xbar/LACT_XBAR_EXPERIMENTAL_ISSUE.md)
 - [XBAR 127-point live V/F state](/downloads/xbar/XBAR_VF_POINTS_RUNTIME_20260812.md)
+- [Raw Astral 2001 W XOC 127-point STATUS CSV](/downloads/xbar/astral-2001w-xoc-r610.57.04-xbar.csv)
+- [Rendered Astral/Lightning XBAR V/F comparison](/downloads/xbar/astral-2001w-xoc-r610.57.04-xbar-vf.png)
+- [FactoryOC values and hashes for 15 representative RTX 5090 VBIOS images](/downloads/xbar/RTX5090_FACTORY_OC_SAMPLES_20260813.csv)
 - [XBAR-only A–B–A in two games under the normal state](/downloads/xbar/issue1147_ingame_reply_20260812.md)
 - [XBAR 2400 recovery experiment under the MCLK-MAX fault state](/downloads/xbar/XBAR2400_MCLKMAX16000_CP2077_AB_20260811.md)
 - [MSI Lightning VBIOS cross-experiment](/downloads/xbar/lightning_vbios_mclk_max_ab_20260803.md)
