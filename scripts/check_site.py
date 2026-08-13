@@ -52,6 +52,8 @@ def main() -> None:
         text = path.read_text(encoding="utf-8")
         if "{{" in text or "{%" in text:
             failures.append(f"unrendered template marker in {path}")
+        if " style=" in text:
+            failures.append(f"inline style blocked by CSP in {path}")
         parser = Links()
         parser.feed(text)
         for url in parser.urls:

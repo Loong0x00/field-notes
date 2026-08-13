@@ -32,6 +32,14 @@ REQUIRED = {
 }
 
 
+def render_table_cell_open(renderer, tokens, idx, options, env) -> str:
+    token = tokens[idx]
+    style = token.attrs.pop("style", "")
+    if style.startswith("text-align:"):
+        token.attrJoin("class", f"align-{style.removeprefix('text-align:')}")
+    return renderer.renderToken(tokens, idx, options, env)
+
+
 def load_frontmatter(path: Path) -> tuple[dict, str]:
     text = path.read_text(encoding="utf-8")
     if not text.startswith("---\n") or "\n---\n" not in text[4:]:
@@ -66,6 +74,8 @@ def main() -> None:
     site["url"] = str(site["url"]).rstrip("/")
 
     md = MarkdownIt("commonmark", {"html": False}).enable("table")
+    md.add_render_rule("th_open", render_table_cell_open)
+    md.add_render_rule("td_open", render_table_cell_open)
     posts: list[dict] = []
     seen_slugs: set[str] = set()
     for path in sorted(CONTENT.glob("*.md")):
