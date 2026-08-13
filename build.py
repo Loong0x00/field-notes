@@ -13,6 +13,7 @@ from markdown_it import MarkdownIt
 
 ROOT = Path(__file__).resolve().parent
 CONTENT = ROOT / "content" / "posts"
+DOWNLOADS = ROOT / "downloads"
 TEMPLATES = ROOT / "templates"
 OUT = ROOT / "public"
 REQUIRED = {
@@ -64,7 +65,7 @@ def main() -> None:
         raise ValueError("site.yml must define a public url")
     site["url"] = str(site["url"]).rstrip("/")
 
-    md = MarkdownIt("commonmark", {"html": False})
+    md = MarkdownIt("commonmark", {"html": False}).enable("table")
     posts: list[dict] = []
     seen_slugs: set[str] = set()
     for path in sorted(CONTENT.glob("*.md")):
@@ -95,6 +96,8 @@ def main() -> None:
     shutil.copy2(ROOT / "assets" / "style.css", OUT / "style.css")
     shutil.copy2(ROOT / "assets" / "discussion.js", OUT / "discussion.js")
     shutil.copy2(ROOT / "assets" / "og.png", OUT / "og.png")
+    if DOWNLOADS.exists():
+        shutil.copytree(DOWNLOADS, OUT / "downloads")
     (OUT / ".nojekyll").touch()
 
     env = Environment(
