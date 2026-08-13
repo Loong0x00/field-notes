@@ -100,6 +100,16 @@ footer { padding: 20px 24px; display: flex; justify-content: space-between; colo
 .post-body th.align-right, .post-body td.align-right { text-align: right; }
 .post-body th.align-center, .post-body td.align-center { text-align: center; }
 .post-body img { display: block; width: 100%; height: auto; margin: 30px 0; border: 1px solid var(--rule); }
+.data-disclosure { margin: 22px 0 30px; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+.data-disclosure summary { display: flex; justify-content: space-between; gap: 18px; align-items: center; padding: 16px 2px; cursor: pointer; color: var(--ink); font: 700 13px/1.4 "Noto Sans CJK SC", sans-serif; letter-spacing: .025em; list-style-position: inside; }
+.data-disclosure summary::after { content: "SHOW"; flex: none; color: var(--red); font-size: 10px; letter-spacing: .12em; }
+.data-disclosure[open] summary::after { content: "HIDE"; }
+.data-disclosure summary:hover, .data-disclosure summary:focus-visible { color: var(--red); outline: none; }
+.data-disclosure-body { padding: 2px 0 20px; }
+.data-disclosure-body > p { color: var(--faded); font-size: 13px; }
+.data-disclosure-scroll { max-height: 600px; overflow: auto; border: 1px solid var(--rule); }
+.post-body .data-disclosure table { display: table; width: 100%; margin: 0; white-space: nowrap; }
+.data-disclosure thead { position: sticky; top: 0; z-index: 1; background: var(--paper); }
 .evidence-box { margin-top: 72px; padding: 24px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); color: var(--faded); line-height: 1.8; }
 .evidence-box p { margin: 0 0 10px; }
 .back-link { display: inline-block; margin-top: 54px; font-family: "Noto Sans CJK SC", sans-serif; font-size: 13px; }

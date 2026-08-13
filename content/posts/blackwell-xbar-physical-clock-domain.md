@@ -461,6 +461,8 @@ The curve below follows the presentation of a desktop V/F curve editor: every li
 
 ![Astral 2001 W XOC XBAR V/F curve rendered as 127 square discrete nodes connected point-to-point, with voltage on the horizontal axis and effective frequency on the vertical axis.](/downloads/xbar/astral-2001w-xoc-r610.57.04-xbar-vf.png)
 
+[[xbar-table:astral-2001w-status]]
+
 The voltage axis is the effective-voltage field in the GSP STATUS object. It must not be relabelled as externally measured regulator VOUT. The downloadable raw CSV preserves all 127 records, record offsets, the 16.16 base value, source-voltage field, duplicate fields, and both tuning offsets.
 
 ## What is confirmed and what is not

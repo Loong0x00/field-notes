@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import csv
 import datetime as dt
 import os
 import shutil
@@ -30,6 +31,10 @@ REQUIRED = {
     "boundary",
     "external_url",
 }
+XBAR_TABLE_MARKER = "[[xbar-table:astral-2001w-status]]"
+XBAR_STATUS_CSV = (
+    DOWNLOADS / "xbar" / "astral-2001w-xoc-r610.57.04-xbar.csv"
+)
 
 
 def render_table_cell_open(renderer, tokens, idx, options, env) -> str:
@@ -60,6 +65,58 @@ def parse_date(value: object) -> dt.date:
     return dt.date.fromisoformat(str(value))
 
 
+def render_xbar_status_disclosure() -> str:
+    with XBAR_STATUS_CSV.open(newline="", encoding="utf-8") as handle:
+        rows = list(csv.DictReader(handle))
+    if len(rows) != 127:
+        raise ValueError(f"{XBAR_STATUS_CSV}: expected 127 points, found {len(rows)}")
+
+    table_rows: list[str] = []
+    for expected_point, row in enumerate(rows):
+        point = int(row["point"])
+        voltage_mv = int(row["effective_voltage_uv"]) // 1000
+        base_mhz = int(row["base_freq_mhz"])
+        tuning_mhz = int(row["freq_tuning_offset_khz"]) // 1000
+        effective_mhz = int(row["effective_freq_mhz"])
+        if point != expected_point:
+            raise ValueError(f"{XBAR_STATUS_CSV}: expected point {expected_point}, found {point}")
+        if tuning_mhz != 45 or effective_mhz != base_mhz + tuning_mhz:
+            raise ValueError(f"{XBAR_STATUS_CSV}: inconsistent point {point}")
+        table_rows.append(
+            "<tr>"
+            f'<td class="align-right">{point}</td>'
+            f'<td class="align-right">{voltage_mv}</td>'
+            f'<td class="align-right">{base_mhz}</td>'
+            f'<td class="align-right">{tuning_mhz:+d}</td>'
+            f'<td class="align-right">{effective_mhz}</td>'
+            "</tr>"
+        )
+
+    return """<details class="data-disclosure">
+<summary><span>Complete 127-point STATUS table</span></summary>
+<div class="data-disclosure-body">
+<p>Collapsed by default. Values are reproduced from the downloadable raw CSV.</p>
+<div class="data-disclosure-scroll">
+<table>
+<thead><tr><th class="align-right">Point</th><th class="align-right">STATUS voltage (mV)</th><th class="align-right">Base frequency (MHz)</th><th class="align-right">Tuning offset (MHz)</th><th class="align-right">Effective frequency (MHz)</th></tr></thead>
+<tbody>
+""" + "\n".join(table_rows) + """
+</tbody>
+</table>
+</div>
+</div>
+</details>"""
+
+
+def expand_post_components(body_html: str, path: Path) -> str:
+    rendered_marker = f"<p>{XBAR_TABLE_MARKER}</p>"
+    if rendered_marker in body_html:
+        body_html = body_html.replace(rendered_marker, render_xbar_status_disclosure())
+    if "[[xbar-table:" in body_html:
+        raise ValueError(f"{path}: unknown XBAR table marker")
+    return body_html
+
+
 def write(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text.rstrip() + "\n", encoding="utf-8")
@@ -85,6 +142,7 @@ def main() -> None:
             raise ValueError(f"duplicate slug: {slug}")
         seen_slugs.add(slug)
         date = parse_date(meta["date"])
+        body_html = expand_post_components(md.render(body), path)
         post = dict(meta)
         post.update(
             date=date,
@@ -92,7 +150,7 @@ def main() -> None:
             date_display=date.strftime("%Y.%m.%d"),
             date_short=date.strftime("%m.%d"),
             url=f"/notes/{slug}/",
-            body_html=md.render(body),
+            body_html=body_html,
         )
         posts.append(post)
 
