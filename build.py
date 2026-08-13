@@ -348,6 +348,7 @@ def main() -> None:
     write(
         OUT / "_headers",
         """/*
+  Cache-Control: public, max-age=0, must-revalidate, no-transform
   Content-Security-Policy: default-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; script-src 'self' https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; connect-src 'self' https://challenges.cloudflare.com; img-src 'self' data:; style-src 'self'
   Link: </llms.txt>; rel="alternate"; type="text/plain"
   Permissions-Policy: camera=(), microphone=(), geolocation=()
