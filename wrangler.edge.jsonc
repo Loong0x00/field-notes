@@ -3,8 +3,14 @@
   "name": "loong-field-notes-edge",
   "main": "edge/worker.js",
   "compatibility_date": "2026-08-13",
-  "workers_dev": true,
-  "preview_urls": true,
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [
+    {
+      "pattern": "loong0x00.com",
+      "custom_domain": true
+    }
+  ],
   "assets": {
     "directory": "dist/client",
     "binding": "ASSETS",
