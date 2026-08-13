@@ -64,7 +64,7 @@ h2 { margin: 8px 0 30px; max-width: 920px; font-size: clamp(38px, 6vw, 74px); li
 .verdict span { margin-right: 12px; padding-bottom: 2px; color: var(--red); border-bottom: 2px solid var(--red); font: 800 11px "Noto Sans CJK SC", sans-serif; letter-spacing: .08em; }
 .links { display: flex; gap: 20px; font-size: 14px; font-family: "Noto Sans CJK SC", sans-serif; }
 .method { padding: 110px 0; }
-blockquote { margin: 20px 0 60px; max-width: 980px; font-size: clamp(38px, 6.8vw, 88px); line-height: 1.12; letter-spacing: -.05em; }
+.method blockquote { margin: 20px 0 60px; max-width: 980px; font-size: clamp(38px, 6.8vw, 88px); line-height: 1.12; letter-spacing: -.05em; }
 .method-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; border-top: 1px solid; padding-top: 20px; }
 .method-grid p { margin: 0; line-height: 1.7; }
 .method-grid b { font-family: "Noto Sans CJK SC", sans-serif; color: var(--red); }
@@ -92,6 +92,8 @@ footer { padding: 20px 24px; display: flex; justify-content: space-between; colo
 .post-body code { padding: 2px 5px; color: var(--ink); background: #242424; font-size: .88em; }
 .post-body pre { margin: 34px 0; padding: 20px; overflow-x: auto; border: 1px solid var(--rule); background: #0b0b0b; line-height: 1.55; }
 .post-body pre code { padding: 0; background: transparent; }
+.post-body blockquote { margin: 0 0 32px; padding: 14px 18px; color: var(--faded); border-left: 3px solid var(--red); font-size: 15px; line-height: 1.7; letter-spacing: 0; }
+.post-body blockquote p:last-child { margin-bottom: 0; }
 .post-body table { width: 100%; margin: 30px 0; border-collapse: collapse; font-size: 14px; line-height: 1.55; }
 .post-body th, .post-body td { padding: 10px 12px; border: 1px solid var(--rule); text-align: left; vertical-align: top; }
 .post-body th { font-family: "Noto Sans CJK SC", sans-serif; font-size: 12px; letter-spacing: .03em; }
