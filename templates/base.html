@@ -1,11 +1,13 @@
 <!doctype html>
-<html lang="{{ site.language }}">
+<html lang="{{ page_language | default(site.language) }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="{{ description }}">
+  <meta name="author" content="{{ site.author }}">
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
   <meta name="color-scheme" content="dark">
-  <meta property="og:type" content="website">
+  <meta property="og:type" content="{{ og_type | default('website') }}">
   <meta property="og:title" content="{{ page_title }}">
   <meta property="og:description" content="{{ description }}">
   <meta property="og:url" content="{{ canonical }}">
@@ -15,6 +17,8 @@
   <meta name="twitter:card" content="summary_large_image">
   <link rel="canonical" href="{{ canonical }}">
   <link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="/feed.xml">
+  <link rel="alternate" type="text/plain" title="LLM-readable site index" href="/llms.txt">
+  {% block machine_alternates %}{% endblock %}
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="/style.css">
   <title>{{ page_title }}</title>

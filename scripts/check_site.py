@@ -65,6 +65,14 @@ def main() -> None:
             ET.parse(PUBLIC / name)
         except Exception as exc:
             failures.append(f"invalid {name}: {exc}")
+    for name in ("llms.txt", "llms-full.txt", "_headers"):
+        path = PUBLIC / name
+        if not path.is_file() or path.stat().st_size < 100:
+            failures.append(f"missing or empty {name}")
+    for path in sorted((PUBLIC / "notes").glob("*/index.html")):
+        markdown = path.with_name("index.md")
+        if not markdown.is_file() or markdown.stat().st_size < 100:
+            failures.append(f"missing Markdown alternate for {path.relative_to(PUBLIC)}")
     if failures:
         print("\n".join(f"ERROR: {item}" for item in failures), file=sys.stderr)
         raise SystemExit(1)

@@ -1,20 +1,32 @@
 {% extends "base.html" %}
+{% block machine_alternates %}
+  <link rel="alternate" type="text/markdown" title="Markdown version" href="{{ post.markdown_url }}">
+  <meta property="article:published_time" content="{{ post.date_iso }}T00:00:00+00:00">
+  <meta property="article:section" content="{{ post.category }}">
+{% endblock %}
 {% block content %}
 <main class="post-shell">
-  <article>
+  <article itemscope itemtype="https://schema.org/TechArticle" itemid="{{ canonical }}">
+    <meta itemprop="mainEntityOfPage" content="{{ canonical }}">
+    <meta itemprop="inLanguage" content="{{ post.language }}">
+    <meta itemprop="author" content="{{ site.author }}">
+    <meta itemprop="description" content="{{ post.summary }}">
+    <meta itemprop="image" content="{{ site.url }}/og.png">
     <header class="post-header">
       <div class="post-meta">
         <span class="stamp">{{ post.status }}</span>
         <span>NOTE {{ post.serial }}</span>
-        <time datetime="{{ post.date_iso }}">{{ post.date_display }}</time>
+        <time itemprop="datePublished" datetime="{{ post.date_iso }}">{{ post.date_display }}</time>
         <span>{{ post.category }}</span>
       </div>
-      <h1>{{ post.title }}</h1>
+      <h1 itemprop="headline">{{ post.title }}</h1>
       <p class="deck">{{ post.summary }}</p>
     </header>
 
     <div class="post-body">
-      {{ post.body_html | safe }}
+      <div class="article-copy" itemprop="articleBody">
+        {{ post.body_html | safe }}
+      </div>
       <aside class="evidence-box">
         <p><strong>证据边界：</strong>{{ post.boundary }}</p>
         {% if post.external_url %}

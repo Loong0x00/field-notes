@@ -121,7 +121,10 @@ export async function listComments(request, env, article) {
       });
     }
   }
-  return json({ comments });
+  return json({
+    comments,
+    viewer: viewer ? { id: Number(viewer.id), username: viewer.username, role: viewer.role } : null,
+  });
 }
 
 export async function createComment(request, env, article) {

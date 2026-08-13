@@ -10,8 +10,6 @@ import {
 import { serveMedia, upload } from "./media.js";
 import { HTTPError, apiError, json, requireSameOrigin, secure } from "./utils.js";
 
-const STATIC_HTML = typeof __STATIC_HTML__ === "undefined" ? {} : __STATIC_HTML__;
-
 function routeMatch(pathname, pattern) {
   const match = pathname.match(pattern);
   return match ? match.slice(1).map(decodeURIComponent) : null;
@@ -21,7 +19,6 @@ async function api(request, env) {
   const url = new URL(request.url);
   const { pathname } = url;
   requireSameOrigin(request);
-  await bootstrapAdmin(env);
 
   if (request.method === "GET" && pathname === "/healthz") return json({ status: "ok" });
   if (request.method === "GET" && pathname === "/v1/config") {
@@ -32,7 +29,10 @@ async function api(request, env) {
       username: { min: 3, max: 24, pattern: "[A-Za-z0-9_-]+" },
     });
   }
-  if (pathname.startsWith("/v1/auth/")) return handleAuth(request, env, pathname);
+  if (pathname.startsWith("/v1/auth/")) {
+    await bootstrapAdmin(env);
+    return handleAuth(request, env, pathname);
+  }
   if (request.method === "POST" && pathname === "/v1/uploads") return upload(request, env);
 
   let match = routeMatch(pathname, /^\/media\/([^/]+)$/);
@@ -72,25 +72,6 @@ function addStaticSecurity(response) {
   return new Response(secured.body, { status: secured.status, statusText: secured.statusText, headers });
 }
 
-function embeddedPage(url) {
-  const html = STATIC_HTML[url.pathname];
-  if (html !== undefined) {
-    const status = url.pathname === "/404.html" ? 404 : 200;
-    return new Response(html, {
-      status,
-      headers: {
-        "Cache-Control": "public, max-age=0, must-revalidate",
-        "Content-Type": "text/html; charset=utf-8",
-      },
-    });
-  }
-  if (!url.pathname.endsWith("/") && STATIC_HTML[`${url.pathname}/`] !== undefined) {
-    url.pathname += "/";
-    return Response.redirect(url, 308);
-  }
-  return null;
-}
-
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -101,18 +82,17 @@ export default {
     const { pathname } = url;
     if (request.method === "OPTIONS" && isAPIPath(pathname)) return secure(new Response(null, { status: 204 }));
     if (!isAPIPath(pathname)) {
-      const page = embeddedPage(url);
-      if (page) return addStaticSecurity(page);
       if (env.ASSETS) {
         const asset = await env.ASSETS.fetch(request);
         if (asset.status !== 404) return addStaticSecurity(asset);
-      }
-      const notFound = STATIC_HTML["/404.html"];
-      if (notFound !== undefined) {
-        return addStaticSecurity(new Response(notFound, {
-          status: 404,
-          headers: { "Content-Type": "text/html; charset=utf-8" },
-        }));
+        const fallbackURL = new URL("/404.html", request.url);
+        const fallback = await env.ASSETS.fetch(new Request(fallbackURL));
+        if (fallback.ok) {
+          return addStaticSecurity(new Response(request.method === "HEAD" ? null : fallback.body, {
+            status: 404,
+            headers: fallback.headers,
+          }));
+        }
       }
       return secure(apiError(404, "not_found", "页面不存在。"));
     }

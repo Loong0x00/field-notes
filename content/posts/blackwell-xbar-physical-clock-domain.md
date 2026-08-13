@@ -4,6 +4,7 @@ serial: "001"
 title: "XBAR in NVIDIA Blackwell GPUs: A Physical Clock Domain Ignored by Public Tooling"
 date: 2026-08-13
 category: "GPU / Reverse Engineering"
+language: en
 status: "PUBLISHED"
 status_text: "Research note"
 summary: "Runtime control, hardware counters, V/F state, and workload controls on GB202 distinguish XBAR requests, shared-MSVDD arbitration, driver telemetry, and physical voltage."

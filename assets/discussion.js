@@ -343,7 +343,9 @@
 
     async function reload() {
       const result = await api(`/v1/articles/${encodeURIComponent(articleKey)}/comments`);
+      me = result.viewer;
       comments = result.comments;
+      renderIdentity();
       renderTree();
     }
 
@@ -552,11 +554,8 @@
     }
 
     try {
-      const [session, result] = await Promise.all([
-        api("/v1/auth/session"),
-        api(`/v1/articles/${encodeURIComponent(articleKey)}/comments`),
-      ]);
-      me = session.user;
+      const result = await api(`/v1/articles/${encodeURIComponent(articleKey)}/comments`);
+      me = result.viewer;
       comments = result.comments;
       renderIdentity();
       renderTree();
@@ -567,6 +566,19 @@
     }
   }
 
+  function initDiscussionWhenNear(root) {
+    if (!("IntersectionObserver" in window)) {
+      initDiscussion(root);
+      return;
+    }
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      observer.disconnect();
+      initDiscussion(root);
+    }, { rootMargin: "1200px 0px" });
+    observer.observe(root);
+  }
+
   document.querySelectorAll("[data-auth-page]").forEach(initAccountPage);
-  document.querySelectorAll("[data-discussion]").forEach(initDiscussion);
+  document.querySelectorAll("[data-discussion]").forEach(initDiscussionWhenNear);
 })();

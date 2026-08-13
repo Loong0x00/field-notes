@@ -4,7 +4,9 @@ from __future__ import annotations
 import csv
 import datetime as dt
 import os
+import re
 import shutil
+import struct
 from pathlib import Path
 
 import yaml
@@ -35,6 +37,9 @@ XBAR_TABLE_MARKER = "[[xbar-table:astral-2001w-status]]"
 XBAR_STATUS_CSV = (
     DOWNLOADS / "xbar" / "astral-2001w-xoc-r610.57.04-xbar.csv"
 )
+XBAR_STATUS_PUBLIC = "/downloads/xbar/astral-2001w-xoc-r610.57.04-xbar.csv"
+IMAGE_TAG = re.compile(r"<img (?P<attrs>[^>]*?)\s*/>")
+IMAGE_SRC = re.compile(r'\bsrc="([^"]+)"')
 
 
 def render_table_cell_open(renderer, tokens, idx, options, env) -> str:
@@ -117,6 +122,105 @@ def expand_post_components(body_html: str, path: Path) -> str:
     return body_html
 
 
+def machine_markdown(body: str) -> str:
+    return body.replace(
+        XBAR_TABLE_MARKER,
+        f"[Complete 127-point STATUS table (CSV)]({XBAR_STATUS_PUBLIC})",
+    )
+
+
+def local_image_dimensions(url: str) -> tuple[int, int] | None:
+    if not url.startswith("/") or "?" in url or "#" in url:
+        return None
+    path = ROOT / url.lstrip("/")
+    if not path.is_file():
+        return None
+    with path.open("rb") as handle:
+        header = handle.read(24)
+    if header[:8] == b"\x89PNG\r\n\x1a\n" and header[12:16] == b"IHDR":
+        return struct.unpack(">II", header[16:24])
+    return None
+
+
+def enrich_images(body_html: str) -> str:
+    def replace(match: re.Match[str]) -> str:
+        attrs = match.group("attrs").strip()
+        source = IMAGE_SRC.search(attrs)
+        additions = []
+        if " loading=" not in f" {attrs}":
+            additions.extend(['loading="lazy"', 'decoding="async"'])
+        if source and " width=" not in f" {attrs}" and (size := local_image_dimensions(source.group(1))):
+            additions.extend([f'width="{size[0]}"', f'height="{size[1]}"'])
+        suffix = f" {' '.join(additions)}" if additions else ""
+        return f"<img {attrs}{suffix} />"
+
+    return IMAGE_TAG.sub(replace, body_html)
+
+
+def render_machine_post(site: dict, post: dict) -> str:
+    frontmatter = {
+        "title": post["title"],
+        "canonical": f"{site['url']}{post['url']}",
+        "date": post["date_iso"],
+        "language": post["language"],
+        "category": post["category"],
+        "status": post["status"],
+        "summary": post["summary"],
+        "evidence_boundary": post["boundary"],
+    }
+    header = yaml.safe_dump(frontmatter, sort_keys=False, allow_unicode=True).strip()
+    return f"---\n{header}\n---\n\n# {post['title']}\n\n{post['body_markdown'].strip()}\n"
+
+
+def render_llms_index(site: dict, posts: list[dict]) -> str:
+    lines = [
+        f"# {site['title']}",
+        "",
+        f"> {site['description']}",
+        "",
+        "Evidence-bounded technical field notes by Loong0x00. Canonical HTML is intended for people; Markdown alternates preserve the same article semantics for machines.",
+        "",
+        "## Research notes",
+        "",
+    ]
+    lines.extend(
+        f"- [{post['title']}]({site['url']}{post['markdown_url']}): {post['summary']}"
+        for post in posts
+    )
+    lines.extend([
+        "",
+        "## Evidence and data",
+        "",
+        f"- [XBAR evidence bundle index]({site['url']}/downloads/xbar/INDEX.md): raw notes, CSV data, hashes, runnable code, and verification boundaries.",
+        f"- [Atom feed]({site['url']}/feed.xml): publication updates.",
+        f"- [Sitemap]({site['url']}/sitemap.xml): canonical HTML pages.",
+        f"- [Full machine-readable corpus]({site['url']}/llms-full.txt): all published note text in one file.",
+    ])
+    return "\n".join(lines) + "\n"
+
+
+def render_llms_full(site: dict, posts: list[dict]) -> str:
+    parts = [
+        f"# {site['title']}: full published corpus",
+        "",
+        f"> {site['description']}",
+    ]
+    for post in posts:
+        parts.extend([
+            "",
+            "---",
+            "",
+            f"# {post['title']}",
+            "",
+            f"Canonical: {site['url']}{post['url']}",
+            f"Published: {post['date_iso']}",
+            f"Evidence boundary: {post['boundary']}",
+            "",
+            post["body_markdown"].strip(),
+        ])
+    return "\n".join(parts) + "\n"
+
+
 def write(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text.rstrip() + "\n", encoding="utf-8")
@@ -142,7 +246,7 @@ def main() -> None:
             raise ValueError(f"duplicate slug: {slug}")
         seen_slugs.add(slug)
         date = parse_date(meta["date"])
-        body_html = expand_post_components(md.render(body), path)
+        body_html = enrich_images(expand_post_components(md.render(body), path))
         post = dict(meta)
         post.update(
             date=date,
@@ -150,6 +254,9 @@ def main() -> None:
             date_display=date.strftime("%Y.%m.%d"),
             date_short=date.strftime("%m.%d"),
             url=f"/notes/{slug}/",
+            markdown_url=f"/notes/{slug}/index.md",
+            language=str(meta.get("language", site["language"])),
+            body_markdown=machine_markdown(body),
             body_html=body_html,
         )
         posts.append(post)
@@ -167,6 +274,16 @@ def main() -> None:
     if DOWNLOADS.exists():
         shutil.copytree(DOWNLOADS, OUT / "downloads")
     (OUT / ".nojekyll").touch()
+    write(
+        OUT / "_headers",
+        """/*
+  Content-Security-Policy: default-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; script-src 'self' https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; connect-src 'self' https://challenges.cloudflare.com; img-src 'self' data:; style-src 'self'
+  Link: </llms.txt>; rel="alternate"; type="text/plain"
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Referrer-Policy: no-referrer
+  X-Content-Type-Options: nosniff
+""",
+    )
 
     env = Environment(
         loader=FileSystemLoader(TEMPLATES),
@@ -200,8 +317,11 @@ def main() -> None:
             page_title=f"{post['title']} — {site['author']}",
             description=post["summary"],
             canonical=f"{site['url']}{post['url']}",
+            page_language=post["language"],
+            og_type="article",
         )
         write(OUT / "notes" / post["slug"] / "index.html", rendered)
+        write(OUT / "notes" / post["slug"] / "index.md", render_machine_post(site, post))
 
     not_found = env.get_template("404.html").render(
         **shared,
@@ -221,9 +341,11 @@ def main() -> None:
         env.get_template("feed.xml").render(**shared, updated=updated.isoformat()),
     )
     write(OUT / "sitemap.xml", env.get_template("sitemap.xml").render(**shared))
+    write(OUT / "llms.txt", render_llms_index(site, posts))
+    write(OUT / "llms-full.txt", render_llms_full(site, posts))
     write(
         OUT / "robots.txt",
-        f"User-agent: *\nAllow: /\nSitemap: {site['url']}/sitemap.xml\n",
+        f"User-agent: *\nAllow: /\nSitemap: {site['url']}/sitemap.xml\n# Machine-readable index: {site['url']}/llms.txt\n",
     )
     print(f"built {len(posts)} posts into {OUT}")
 

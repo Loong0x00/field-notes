@@ -1,7 +1,8 @@
 # Field Notes
 
-A Markdown-driven personal site deployed as one managed edge application. Static
-pages and the discussion API share the same origin; D1 stores accounts and
+A Markdown-driven personal site deployed as one managed edge application. HTML,
+Markdown alternates and machine-readable indexes are served asset-first; only
+the discussion API and media routes invoke the Worker. D1 stores accounts and
 threaded comments, and R2 stores image attachments. The site has no analytics,
 newsletter or CMS.
 
@@ -9,8 +10,8 @@ newsletter or CMS.
 
 The initial deployment intentionally contains no posts. Add a Markdown file
 under `content/posts/` when there is something worth publishing. The homepage,
-article pages, Atom feed, sitemap, robots file, and 404 page are generated from
-the same post metadata.
+article pages, Markdown alternates, `llms.txt`, `llms-full.txt`, Atom feed,
+sitemap, robots file, and 404 page are generated from the same post metadata.
 
 ## Build and verify
 

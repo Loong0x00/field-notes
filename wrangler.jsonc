@@ -6,6 +6,8 @@
   "assets": {
     "directory": "dist/client",
     "binding": "ASSETS",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page",
     "run_worker_first": ["/v1/*", "/media/*", "/healthz"]
   },
   "d1_databases": [

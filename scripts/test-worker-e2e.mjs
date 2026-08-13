@@ -63,6 +63,7 @@ const reply = await json(`/v1/articles/${article}/comments`, {
 }, 201);
 const listed = await json(`/v1/articles/${article}/comments`);
 assert.equal(listed.comments.length, 2);
+assert.equal(listed.viewer.username, username);
 assert.equal((await request(upload.attachment.url)).headers.get("content-type"), "image/png");
 
 await request(`/v1/comments/${reply.id}`, {
@@ -74,6 +75,7 @@ await request(upload.attachment.url, {}, 404);
 
 await request("/v1/auth/logout", { method: "POST" }, 204);
 assert.equal((await json("/v1/auth/session")).user, null);
+assert.equal((await json(`/v1/articles/${article}/comments`)).viewer, null);
 await json("/v1/auth/login", {
   method: "POST",
   body: JSON.stringify({ username, password, turnstile_token: "" }),
