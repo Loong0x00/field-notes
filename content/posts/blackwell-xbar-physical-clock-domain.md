@@ -457,11 +457,11 @@ The active Astral 2001 W XOC image was version `98.02.2E.80.50` under R610.57.04
 
 Offline comparison also found that Astral 2001 W XOC and Lightning 2500 W XOC have byte-identical `PERFORMANCE`, `BOOST`, Clock Programming, Voltage Map v0x30, NAFLL, Frequency Controller, Base Clock, Voltage Device, Voltage Rail, and Voltage Policy inputs. Their relevant static curve-input difference is FactoryOC: `+45 MHz / 2580 MHz` versus `+195 MHz / 2730 MHz`. Holding the GPU, driver, temperature, fuse/speedo inputs, and generator behavior constant therefore gives a controlled Lightning projection exactly 150 MHz above the captured Astral curve. The projected endpoint is `1240 mV / 2962 MHz`; it is not a Lightning live capture and says nothing by itself about delivered voltage or stability.
 
-![GB202 XBAR V/F plot showing the decoded Astral base curve, the measured Astral 2001 W effective curve, and the explicitly marked conditional Lightning 2500 W projection.](/downloads/xbar/astral-2001w-xoc-r610.57.04-xbar-vf.png)
+The curve below follows the presentation of a desktop V/F curve editor: every live record is a discrete square node connected to its neighbours, voltage is horizontal, and effective frequency is vertical. It plots only the measured Astral STATUS bank; the Lightning result remains an explicitly conditional projection rather than being drawn as if it had been captured.
 
-The voltage column below is the effective-voltage field in the GSP STATUS object. It must not be relabelled as externally measured regulator VOUT. The raw CSV additionally preserves record offsets, the 16.16 base value, source-voltage field, duplicate fields, and both tuning offsets.
+![Astral 2001 W XOC XBAR V/F curve rendered as 127 square discrete nodes connected point-to-point, with voltage on the horizontal axis and effective frequency on the vertical axis.](/downloads/xbar/astral-2001w-xoc-r610.57.04-xbar-vf.png)
 
-[[data-table:astral-2001w-xbar-status]]
+The voltage axis is the effective-voltage field in the GSP STATUS object. It must not be relabelled as externally measured regulator VOUT. The downloadable raw CSV preserves all 127 records, record offsets, the 16.16 base value, source-voltage field, duplicate fields, and both tuning offsets.
 
 ## What is confirmed and what is not
 
@@ -510,7 +510,7 @@ The compact [download index](/downloads/xbar/INDEX.md) maps every local research
 - [XBAR runtime frequency and domain-voltage control](/downloads/xbar/LACT_XBAR_EXPERIMENTAL_ISSUE.md)
 - [XBAR 127-point live V/F state](/downloads/xbar/XBAR_VF_POINTS_RUNTIME_20260812.md)
 - [Raw Astral 2001 W XOC 127-point STATUS CSV](/downloads/xbar/astral-2001w-xoc-r610.57.04-xbar.csv)
-- [Rendered Astral/Lightning XBAR V/F comparison](/downloads/xbar/astral-2001w-xoc-r610.57.04-xbar-vf.png)
+- [Static discrete-node export of the Astral XBAR V/F curve](/downloads/xbar/astral-2001w-xoc-r610.57.04-xbar-vf.png)
 - [FactoryOC values and hashes for 15 representative RTX 5090 VBIOS images](/downloads/xbar/RTX5090_FACTORY_OC_SAMPLES_20260813.csv)
 - [XBAR-only A–B–A in two games under the normal state](/downloads/xbar/issue1147_ingame_reply_20260812.md)
 - [XBAR 2400 recovery experiment under the MCLK-MAX fault state](/downloads/xbar/XBAR2400_MCLKMAX16000_CP2077_AB_20260811.md)

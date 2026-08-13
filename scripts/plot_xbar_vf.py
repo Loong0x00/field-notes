@@ -20,8 +20,8 @@ def main() -> None:
         raise ValueError(f"expected 127 XBAR points, found {len(rows)}")
 
     voltage_mv = [int(row["effective_voltage_uv"]) / 1000 for row in rows]
-    base_mhz = [int(row["base_freq_mhz"]) for row in rows]
     effective_mhz = [int(row["effective_freq_mhz"]) for row in rows]
+    base_mhz = [int(row["base_freq_mhz"]) for row in rows]
     offset_mhz = [int(row["freq_tuning_offset_khz"]) / 1000 for row in rows]
 
     if set(offset_mhz) != {45.0}:
@@ -29,21 +29,21 @@ def main() -> None:
     if any(effective != base + 45 for base, effective in zip(base_mhz, effective_mhz)):
         raise ValueError("effective frequency is not base frequency + 45 MHz")
 
-    lightning_projection_mhz = [base + 195 for base in base_mhz]
-
-    paper = "#111111"
-    ink = "#e8e0cf"
-    faded = "#aaa59b"
-    rule = "#57544d"
-    red = "#dc665b"
-    blue = "#75a7c7"
+    panel = "#151719"
+    plot = "#202327"
+    ink = "#f0f2f3"
+    faded = "#a5abb1"
+    grid_major = "#5b6269"
+    grid_minor = "#353a40"
+    curve = "#d8dde1"
+    selected = "#ff9d36"
 
     plt.rcParams.update(
         {
             "font.family": "DejaVu Sans",
-            "axes.facecolor": paper,
-            "figure.facecolor": paper,
-            "axes.edgecolor": rule,
+            "axes.facecolor": plot,
+            "figure.facecolor": panel,
+            "axes.edgecolor": grid_major,
             "axes.labelcolor": ink,
             "xtick.color": faded,
             "ytick.color": faded,
@@ -51,74 +51,88 @@ def main() -> None:
         }
     )
 
-    fig, axis = plt.subplots(figsize=(14, 8), dpi=180)
-    axis.plot(
-        voltage_mv,
-        base_mhz,
-        color=faded,
-        linewidth=1.8,
-        linestyle=(0, (4, 4)),
-        label="Decoded base frequency",
-        zorder=1,
-    )
+    fig, axis = plt.subplots(figsize=(16, 10), dpi=180)
     axis.plot(
         voltage_mv,
         effective_mhz,
-        color=red,
-        linewidth=2.6,
-        marker="o",
-        markersize=2.5,
-        markeredgewidth=0,
-        label="Astral 2001 W live STATUS (+45 MHz FactoryOC)",
+        color=curve,
+        linewidth=1.35,
+        marker="s",
+        markersize=4.8,
+        markerfacecolor=plot,
+        markeredgecolor=curve,
+        markeredgewidth=0.85,
         zorder=3,
     )
-    axis.plot(
-        voltage_mv,
-        lightning_projection_mhz,
-        color=blue,
-        linewidth=2.0,
-        linestyle=(0, (8, 4)),
-        label="Lightning 2500 W conditional projection (+195 MHz FactoryOC)",
-        zorder=2,
+    axis.scatter(
+        [voltage_mv[-1]],
+        [effective_mhz[-1]],
+        s=72,
+        marker="s",
+        facecolor=selected,
+        edgecolor=ink,
+        linewidth=1.2,
+        zorder=5,
     )
 
-    axis.set_xlim(430, 1260)
-    axis.set_ylim(0, 3150)
-    axis.set_xlabel("Effective voltage (mV)", labelpad=12)
-    axis.set_ylabel("XBAR frequency (MHz)", labelpad=12)
-    axis.grid(True, color=rule, linewidth=0.65, alpha=0.55)
+    axis.set_xlim(440, 1250)
+    axis.set_ylim(0, 3050)
+    axis.set_xlabel("VOLTAGE (mV)", labelpad=16, fontsize=11, fontweight="bold")
+    axis.set_ylabel("XBAR FREQUENCY (MHz)", labelpad=16, fontsize=11, fontweight="bold")
+    axis.set_xticks(range(450, 1251, 50))
+    axis.set_xticks(range(450, 1251, 10), minor=True)
+    axis.set_yticks(range(0, 3001, 250))
+    axis.set_yticks(range(0, 3001, 50), minor=True)
+    axis.grid(which="major", color=grid_major, linewidth=0.8, alpha=0.75)
+    axis.grid(which="minor", color=grid_minor, linewidth=0.45, alpha=0.8)
     axis.set_axisbelow(True)
-    axis.legend(
-        loc="lower right",
-        frameon=True,
-        facecolor=paper,
-        edgecolor=rule,
-        labelcolor=ink,
-        fontsize=9.5,
-    )
-    axis.set_title(
-        "GB202 XBAR voltage/frequency bank",
-        loc="left",
-        fontsize=23,
+    axis.tick_params(which="major", length=6, width=0.9, labelsize=9)
+    axis.tick_params(which="minor", length=3, width=0.5)
+
+    fig.text(
+        0.075,
+        0.947,
+        "XBAR VOLTAGE / FREQUENCY CURVE",
+        color=ink,
+        fontsize=22,
         fontweight="bold",
-        pad=24,
     )
     fig.text(
-        0.125,
-        0.91,
-        "Astral 2001 W XOC · R610.57.04 · 127 live STATUS points",
-        color=faded,
-        fontsize=11,
-    )
-    fig.text(
-        0.125,
-        0.025,
-        "The Lightning line is a controlled +150 MHz FactoryOC projection from byte-identical curve inputs, not a live capture.",
+        0.075,
+        0.918,
+        "ASUS ASTRAL 2001 W XOC  ·  R610.57.04  ·  LIVE GSP STATUS  ·  127 DISCRETE POINTS",
         color=faded,
         fontsize=9.5,
     )
-    fig.tight_layout(rect=(0.04, 0.06, 0.98, 0.90))
-    fig.savefig(OUTPUT, facecolor=paper)
+    fig.text(0.625, 0.947, "SELECTED POINT", color=faded, fontsize=8.5, fontweight="bold")
+    fig.text(0.625, 0.916, "126", color=selected, fontsize=20, fontweight="bold")
+    fig.text(0.710, 0.947, "VOLTAGE", color=faded, fontsize=8.5, fontweight="bold")
+    fig.text(0.710, 0.916, "1240 mV", color=ink, fontsize=17, fontweight="bold")
+    fig.text(0.810, 0.947, "FREQUENCY", color=faded, fontsize=8.5, fontweight="bold")
+    fig.text(0.810, 0.916, "2812 MHz", color=ink, fontsize=17, fontweight="bold")
+    fig.text(0.910, 0.947, "BASE / OFFSET", color=faded, fontsize=8.5, fontweight="bold")
+    fig.text(0.910, 0.916, "2767 / +45", color=ink, fontsize=14, fontweight="bold")
+
+    axis.annotate(
+        "P126   1240 mV   2812 MHz",
+        xy=(voltage_mv[-1], effective_mhz[-1]),
+        xytext=(-210, 56),
+        textcoords="offset points",
+        color=ink,
+        fontsize=9.5,
+        fontweight="bold",
+        bbox={"boxstyle": "square,pad=0.55", "facecolor": panel, "edgecolor": selected},
+        arrowprops={"arrowstyle": "-", "color": selected, "linewidth": 1.2},
+    )
+    fig.text(
+        0.075,
+        0.025,
+        "Each square is one STATUS record; lines connect adjacent records. Voltage is logical GSP STATUS data, not external VRM VOUT.",
+        color=faded,
+        fontsize=9.5,
+    )
+    fig.tight_layout(rect=(0.035, 0.055, 0.985, 0.89))
+    fig.savefig(OUTPUT, facecolor=panel)
     plt.close(fig)
 
 

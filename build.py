@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-import csv
 import datetime as dt
 import os
 import shutil
@@ -31,10 +30,6 @@ REQUIRED = {
     "boundary",
     "external_url",
 }
-XBAR_STATUS_TABLE_MARKER = "[[data-table:astral-2001w-xbar-status]]"
-XBAR_STATUS_CSV = (
-    DOWNLOADS / "xbar" / "astral-2001w-xoc-r610.57.04-xbar.csv"
-)
 
 
 def render_table_cell_open(renderer, tokens, idx, options, env) -> str:
@@ -65,40 +60,6 @@ def parse_date(value: object) -> dt.date:
     return dt.date.fromisoformat(str(value))
 
 
-def render_xbar_status_table() -> str:
-    with XBAR_STATUS_CSV.open(newline="", encoding="utf-8") as handle:
-        rows = list(csv.DictReader(handle))
-    if len(rows) != 127:
-        raise ValueError(f"{XBAR_STATUS_CSV}: expected 127 points, found {len(rows)}")
-
-    lines = [
-        "| Point | STATUS voltage (mV) | Base frequency (MHz) | Frequency tuning offset (MHz) | Effective frequency (MHz) |",
-        "|---:|---:|---:|---:|---:|",
-    ]
-    for expected_point, row in enumerate(rows):
-        point = int(row["point"])
-        voltage_mv = int(row["effective_voltage_uv"]) // 1000
-        base_mhz = int(row["base_freq_mhz"])
-        tuning_mhz = int(row["freq_tuning_offset_khz"]) // 1000
-        effective_mhz = int(row["effective_freq_mhz"])
-        if point != expected_point:
-            raise ValueError(f"{XBAR_STATUS_CSV}: expected point {expected_point}, found {point}")
-        if tuning_mhz != 45 or effective_mhz != base_mhz + tuning_mhz:
-            raise ValueError(f"{XBAR_STATUS_CSV}: inconsistent point {point}")
-        lines.append(
-            f"| {point} | {voltage_mv} | {base_mhz} | {tuning_mhz:+d} | {effective_mhz} |"
-        )
-    return "\n".join(lines)
-
-
-def expand_data_tables(body: str, path: Path) -> str:
-    if XBAR_STATUS_TABLE_MARKER in body:
-        body = body.replace(XBAR_STATUS_TABLE_MARKER, render_xbar_status_table())
-    if "[[data-table:" in body:
-        raise ValueError(f"{path}: unknown data-table marker")
-    return body
-
-
 def write(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text.rstrip() + "\n", encoding="utf-8")
@@ -119,7 +80,6 @@ def main() -> None:
     seen_slugs: set[str] = set()
     for path in sorted(CONTENT.glob("*.md")):
         meta, body = load_frontmatter(path)
-        body = expand_data_tables(body, path)
         slug = str(meta["slug"])
         if slug in seen_slugs:
             raise ValueError(f"duplicate slug: {slug}")
