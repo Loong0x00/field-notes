@@ -65,7 +65,7 @@ def main() -> None:
             ET.parse(PUBLIC / name)
         except Exception as exc:
             failures.append(f"invalid {name}: {exc}")
-    for name in ("llms.txt", "llms-full.txt", "_headers"):
+    for name in ("llms.txt", "llms-full.txt", "_headers", "site.js", "sw.js"):
         path = PUBLIC / name
         if not path.is_file() or path.stat().st_size < 100:
             failures.append(f"missing or empty {name}")

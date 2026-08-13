@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import csv
 import datetime as dt
+import hashlib
+import json
 import os
 import re
 import shutil
@@ -221,6 +223,74 @@ def render_llms_full(site: dict, posts: list[dict]) -> str:
     return "\n".join(parts) + "\n"
 
 
+def render_service_worker(posts: list[dict]) -> str:
+    page_urls = ["/", "/account/", *(post["url"] for post in posts)]
+    static_urls = ["/style.css", "/site.js", "/discussion.js"]
+    cacheable_urls = page_urls + static_urls
+
+    digest = hashlib.sha256()
+    for url in cacheable_urls:
+        relative = url.lstrip("/")
+        path = OUT / relative / "index.html" if url.endswith("/") else OUT / relative
+        digest.update(url.encode("utf-8"))
+        digest.update(path.read_bytes())
+
+    return f'''"use strict";
+
+const CACHE_NAME = "field-notes-{digest.hexdigest()[:16]}";
+const CACHEABLE_PATHS = new Set({json.dumps(cacheable_urls, ensure_ascii=False)});
+
+self.addEventListener("install", () => self.skipWaiting());
+
+self.addEventListener("activate", (event) => {{
+  event.waitUntil((async () => {{
+    const names = await caches.keys();
+    await Promise.all(names.filter((name) => name.startsWith("field-notes-") && name !== CACHE_NAME).map((name) => caches.delete(name)));
+    await self.clients.claim();
+  }})());
+}});
+
+async function fetchAndCache(request) {{
+  const response = await fetch(request);
+  if (response.ok && response.type === "basic") {{
+    const cache = await caches.open(CACHE_NAME);
+    await cache.put(request, response.clone());
+  }}
+  return response;
+}}
+
+self.addEventListener("fetch", (event) => {{
+  const url = new URL(event.request.url);
+  if (event.request.method !== "GET" || url.origin !== self.location.origin || !CACHEABLE_PATHS.has(url.pathname)) return;
+
+  event.respondWith((async () => {{
+    const cache = await caches.open(CACHE_NAME);
+    const cached = await cache.match(event.request, {{ ignoreSearch: true }});
+    const update = fetchAndCache(event.request);
+    if (cached) {{
+      event.waitUntil(update.catch(() => undefined));
+      return cached;
+    }}
+    return update;
+  }})());
+}});
+
+self.addEventListener("message", (event) => {{
+  if (event.data?.type !== "warm" || !Array.isArray(event.data.paths)) return;
+  const requests = event.data.paths
+    .filter((path) => CACHEABLE_PATHS.has(path))
+    .map((path) => new Request(new URL(path, self.location.origin), {{ credentials: "same-origin" }}));
+  event.waitUntil((async () => {{
+    const cache = await caches.open(CACHE_NAME);
+    await Promise.all(requests.map(async (request) => {{
+      if (await cache.match(request, {{ ignoreSearch: true }})) return;
+      await fetchAndCache(request);
+    }}));
+  }})());
+}});
+'''
+
+
 def write(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text.rstrip() + "\n", encoding="utf-8")
@@ -269,6 +339,7 @@ def main() -> None:
         shutil.rmtree(OUT)
     OUT.mkdir()
     shutil.copy2(ROOT / "assets" / "style.css", OUT / "style.css")
+    shutil.copy2(ROOT / "assets" / "site.js", OUT / "site.js")
     shutil.copy2(ROOT / "assets" / "discussion.js", OUT / "discussion.js")
     shutil.copy2(ROOT / "assets" / "og.png", OUT / "og.png")
     if DOWNLOADS.exists():
@@ -282,6 +353,10 @@ def main() -> None:
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   Referrer-Policy: no-referrer
   X-Content-Type-Options: nosniff
+
+/sw.js
+  Cache-Control: no-cache
+  Service-Worker-Allowed: /
 """,
     )
 
@@ -343,6 +418,7 @@ def main() -> None:
     write(OUT / "sitemap.xml", env.get_template("sitemap.xml").render(**shared))
     write(OUT / "llms.txt", render_llms_index(site, posts))
     write(OUT / "llms-full.txt", render_llms_full(site, posts))
+    write(OUT / "sw.js", render_service_worker(posts))
     write(
         OUT / "robots.txt",
         f"User-agent: *\nAllow: /\nSitemap: {site['url']}/sitemap.xml\n# Machine-readable index: {site['url']}/llms.txt\n",
