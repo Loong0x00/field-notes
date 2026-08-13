@@ -9,7 +9,7 @@
   "scripts": {
     "build": "python build.py && python scripts/check_site.py && node scripts/build-worker.mjs",
     "db:generate": "drizzle-kit generate",
-    "test": "node --test worker/*.test.mjs",
+    "test": "node --test worker/*.test.mjs edge/*.test.mjs",
     "test:e2e": "node scripts/test-worker-e2e.mjs",
     "check": "npm test && npm run build"
   },

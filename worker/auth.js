@@ -109,7 +109,7 @@ async function verifyTurnstile(request, env, token) {
   if (env.ALLOW_NO_TURNSTILE === "true") return true;
   if (!token || !env.TURNSTILE_SECRET_KEY) return false;
   const body = new URLSearchParams({ secret: env.TURNSTILE_SECRET_KEY, response: token });
-  const ip = requestIP(request);
+  const ip = requestIP(request, env);
   if (ip !== "unknown") body.set("remoteip", ip);
   let response;
   try {
@@ -162,7 +162,7 @@ export async function bootstrapAdmin(env) {
 }
 
 async function register(request, env) {
-  const ip = requestIP(request);
+  const ip = requestIP(request, env);
   if (!await takeRateLimit(env, `register:${ip}`, 5, 3600)) {
     throw new HTTPError(429, "rate_limited", "注册过于频繁，请稍后再试。");
   }
@@ -198,7 +198,7 @@ async function login(request, env) {
   } catch {
     normalized = typeof input.username === "string" ? input.username.trim().toLowerCase() : "";
   }
-  const ip = requestIP(request);
+  const ip = requestIP(request, env);
   if (!await takeRateLimit(env, `login-all:${ip}`, 30, 15 * 60)) {
     throw new HTTPError(429, "rate_limited", "登录尝试过于频繁，请稍后再试。");
   }
@@ -225,7 +225,7 @@ async function logout(request, env) {
 }
 
 async function recover(request, env) {
-  const ip = requestIP(request);
+  const ip = requestIP(request, env);
   if (!await takeRateLimit(env, `recover:${ip}`, 8, 3600)) {
     throw new HTTPError(429, "rate_limited", "恢复尝试过于频繁，请稍后再试。");
   }

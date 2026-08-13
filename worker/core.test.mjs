@@ -11,6 +11,7 @@ import {
 } from "./auth.js";
 import { detectImage } from "./media.js";
 import worker from "./index.js";
+import { requestIP } from "./utils.js";
 
 test("password hashing and validation", async () => {
   validatePassword("correct horse battery staple");
@@ -47,4 +48,21 @@ test("www host redirects to the canonical host", async () => {
   assert.equal(response.status, 308);
   assert.equal(response.headers.get("Location"), "https://loong0x00.com/account/?next=%2Fnotes%2F");
   assert.equal(response.headers.get("X-Content-Type-Options"), "nosniff");
+});
+
+test("forwarded client IP requires the edge secret", () => {
+  const trusted = new Request("https://origin.example/v1/config", { headers: {
+    "CF-Connecting-IP": "2a06:98c0:3600::103",
+    "X-Field-Notes-Client-IP": "2001:db8::5",
+    "X-Field-Notes-Edge-Secret": "correct-secret",
+  } });
+  assert.equal(requestIP(trusted, { EDGE_PROXY_SECRET: "correct-secret" }), "2001:db8::5");
+  assert.equal(requestIP(trusted, { EDGE_PROXY_SECRET: "different-secret" }), "2a06:98c0:3600::103");
+
+  const invalid = new Request("https://origin.example/v1/config", { headers: {
+    "CF-Connecting-IP": "198.51.100.2",
+    "X-Field-Notes-Client-IP": "not an ip",
+    "X-Field-Notes-Edge-Secret": "correct-secret",
+  } });
+  assert.equal(requestIP(invalid, { EDGE_PROXY_SECRET: "correct-secret" }), "198.51.100.2");
 });

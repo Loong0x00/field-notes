@@ -130,7 +130,7 @@ export async function listComments(request, env, article) {
 export async function createComment(request, env, article) {
   validateArticle(article);
   const user = await requireUser(request, env);
-  const ip = requestIP(request);
+  const ip = requestIP(request, env);
   if (!await takeRateLimit(env, `comment-user:${user.id}`, 30, 10 * 60) ||
       !await takeRateLimit(env, `comment-ip:${ip}`, 50, 10 * 60)) {
     throw new HTTPError(429, "rate_limited", "发表过于频繁，请稍后再试。");

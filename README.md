@@ -37,3 +37,16 @@ The repository is `Loong0x00/field-notes`. OpenAI Sites owns the production
 Worker, D1 database, R2 bucket and custom-domain deployment for
 `loong0x00.com`. GitHub Actions validates source changes but does not publish
 the site.
+
+## Optional first-visit edge
+
+`wrangler.edge.jsonc` deploys the generated `dist/client` files directly to a
+separate Cloudflare Worker. Sites remains the durable origin for D1, R2 and the
+discussion API. The edge Worker handles only `/v1/*`, `/media/*` and `/healthz`
+as dynamic proxy routes; it rejects cross-origin writes, never caches those
+responses, and signs the original client IP with `ORIGIN_AUTH_SECRET`.
+
+The Sites Worker must receive the same value as the secret
+`EDGE_PROXY_SECRET`. Never commit either value. The original Sites deployment
+and its apex A records are the rollback target if the edge custom domain is
+detached.

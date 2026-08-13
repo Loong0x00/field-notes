@@ -29,7 +29,17 @@ export function secure(response) {
   return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
 }
 
-export function requestIP(request) {
+export function requestIP(request, env = {}) {
+  const suppliedSecret = request.headers.get("X-Field-Notes-Edge-Secret") || "";
+  const expectedSecret = env.EDGE_PROXY_SECRET || "";
+  const forwardedIP = request.headers.get("X-Field-Notes-Client-IP") || "";
+  const trustedProxy = suppliedSecret && expectedSecret && constantTimeEqual(
+    encoder.encode(suppliedSecret),
+    encoder.encode(expectedSecret),
+  );
+  if (trustedProxy && forwardedIP.length <= 45 && /^(?=.*[.:])[0-9a-f:.]+$/i.test(forwardedIP)) {
+    return forwardedIP;
+  }
   return request.headers.get("CF-Connecting-IP") || "unknown";
 }
 
