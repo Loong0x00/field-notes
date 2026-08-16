@@ -1,0 +1,55 @@
+{
+  "control": {
+    "MSVDD": {
+      "alternate_rel_delta_uv": -5000,
+      "ov_delta_uv": 0,
+      "rel_delta_uv": 15000,
+      "type": 3,
+      "vmin_delta_uv": 0
+    },
+    "NVVDD": {
+      "alternate_rel_delta_uv": -220000,
+      "ov_delta_uv": 0,
+      "rel_delta_uv": -220000,
+      "type": 3,
+      "vmin_delta_uv": 0
+    }
+  },
+  "status": {
+    "call_duration_ns": 490831,
+    "clock_id": "CLOCK_MONOTONIC_RAW",
+    "monotonic_raw_after_ns": 2445896647209,
+    "monotonic_raw_before_ns": 2445896156378,
+    "rails": [
+      {
+        "alternate_reliability_limit_uv": 980000,
+        "current_default_uv": 970000,
+        "current_target_uv": 970000,
+        "margin_limit_uv": 0,
+        "maximum_limit_uv": 980000,
+        "noise_unaware_vmin_uv": 800000,
+        "overvoltage_limit_uv": 1200000,
+        "rail": 0,
+        "reliability_limit_uv": 980000,
+        "sensed_uv": 0,
+        "type": 3,
+        "vmin_limit_uv": 800000
+      },
+      {
+        "alternate_reliability_limit_uv": 1065000,
+        "current_default_uv": 980000,
+        "current_target_uv": 980000,
+        "margin_limit_uv": 0,
+        "maximum_limit_uv": 1065000,
+        "noise_unaware_vmin_uv": 870000,
+        "overvoltage_limit_uv": 1200000,
+        "rail": 1,
+        "reliability_limit_uv": 1065000,
+        "sensed_uv": 0,
+        "type": 3,
+        "vmin_limit_uv": 870000
+      }
+    ],
+    "returned_rail_mask": 3
+  }
+}

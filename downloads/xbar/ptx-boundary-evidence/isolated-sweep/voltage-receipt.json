@@ -1,0 +1,193 @@
+{
+  "applied_epoch": 1786840520.0353098,
+  "calculations": {
+    "MSVDD": {
+      "base_alternate_rel_uv": 1070000,
+      "base_rel_uv": 1050000,
+      "base_vmin_uv": 870000,
+      "minimum_uv": null,
+      "new_alternate_rel_delta_uv": 80000,
+      "new_rel_delta_uv": 100000,
+      "new_vmin_delta_uv": 0,
+      "target_uv": 1150000
+    },
+    "NVVDD": {
+      "base_alternate_rel_uv": 1200000,
+      "base_rel_uv": 1200000,
+      "base_vmin_uv": 800000,
+      "minimum_uv": null,
+      "new_alternate_rel_delta_uv": -250000,
+      "new_rel_delta_uv": -250000,
+      "new_vmin_delta_uv": 0,
+      "target_uv": 950000
+    }
+  },
+  "control_after_apply": {
+    "MSVDD": {
+      "alternate_rel_delta_uv": 80000,
+      "ov_delta_uv": 0,
+      "rel_delta_uv": 100000,
+      "type": 3,
+      "vmin_delta_uv": 0
+    },
+    "NVVDD": {
+      "alternate_rel_delta_uv": -250000,
+      "ov_delta_uv": 0,
+      "rel_delta_uv": -250000,
+      "type": 3,
+      "vmin_delta_uv": 0
+    }
+  },
+  "control_after_restore": {
+    "MSVDD": {
+      "alternate_rel_delta_uv": 0,
+      "ov_delta_uv": 0,
+      "rel_delta_uv": -50000,
+      "type": 3,
+      "vmin_delta_uv": 0
+    },
+    "NVVDD": {
+      "alternate_rel_delta_uv": 0,
+      "ov_delta_uv": 0,
+      "rel_delta_uv": 0,
+      "type": 3,
+      "vmin_delta_uv": 0
+    }
+  },
+  "control_before": {
+    "MSVDD": {
+      "alternate_rel_delta_uv": 0,
+      "ov_delta_uv": 0,
+      "rel_delta_uv": -50000,
+      "type": 3,
+      "vmin_delta_uv": 0
+    },
+    "NVVDD": {
+      "alternate_rel_delta_uv": 0,
+      "ov_delta_uv": 0,
+      "rel_delta_uv": 0,
+      "type": 3,
+      "vmin_delta_uv": 0
+    }
+  },
+  "fixed_window": false,
+  "minimums_uv": {},
+  "preimage": "/home/user/rt_5090_project/benchmark_logs/ptx_xbar_sweep_20260816_083519/voltage-preimage.bin",
+  "restored_epoch": 1786840814.2316055,
+  "state": "restored",
+  "status_after_apply": {
+    "call_duration_ns": 842610,
+    "clock_id": "CLOCK_MONOTONIC_RAW",
+    "monotonic_raw_after_ns": 2145540069730,
+    "monotonic_raw_before_ns": 2145539227120,
+    "rails": [
+      {
+        "alternate_reliability_limit_uv": 950000,
+        "current_default_uv": 800000,
+        "current_target_uv": 800000,
+        "margin_limit_uv": 0,
+        "maximum_limit_uv": 950000,
+        "noise_unaware_vmin_uv": 800000,
+        "overvoltage_limit_uv": 1200000,
+        "rail": 0,
+        "reliability_limit_uv": 950000,
+        "sensed_uv": 0,
+        "type": 3,
+        "vmin_limit_uv": 800000
+      },
+      {
+        "alternate_reliability_limit_uv": 1150000,
+        "current_default_uv": 870000,
+        "current_target_uv": 870000,
+        "margin_limit_uv": 0,
+        "maximum_limit_uv": 1150000,
+        "noise_unaware_vmin_uv": 870000,
+        "overvoltage_limit_uv": 1200000,
+        "rail": 1,
+        "reliability_limit_uv": 1150000,
+        "sensed_uv": 0,
+        "type": 3,
+        "vmin_limit_uv": 870000
+      }
+    ],
+    "returned_rail_mask": 3
+  },
+  "status_after_restore": {
+    "call_duration_ns": 491581,
+    "clock_id": "CLOCK_MONOTONIC_RAW",
+    "monotonic_raw_after_ns": 2439736749672,
+    "monotonic_raw_before_ns": 2439736258091,
+    "rails": [
+      {
+        "alternate_reliability_limit_uv": 1200000,
+        "current_default_uv": 980000,
+        "current_target_uv": 980000,
+        "margin_limit_uv": 0,
+        "maximum_limit_uv": 1200000,
+        "noise_unaware_vmin_uv": 800000,
+        "overvoltage_limit_uv": 1200000,
+        "rail": 0,
+        "reliability_limit_uv": 1200000,
+        "sensed_uv": 0,
+        "type": 3,
+        "vmin_limit_uv": 800000
+      },
+      {
+        "alternate_reliability_limit_uv": 1070000,
+        "current_default_uv": 1000000,
+        "current_target_uv": 1075000,
+        "margin_limit_uv": 0,
+        "maximum_limit_uv": 1000000,
+        "noise_unaware_vmin_uv": 870000,
+        "overvoltage_limit_uv": 1200000,
+        "rail": 1,
+        "reliability_limit_uv": 1000000,
+        "sensed_uv": 0,
+        "type": 3,
+        "vmin_limit_uv": 870000
+      }
+    ],
+    "returned_rail_mask": 3
+  },
+  "status_before": {
+    "call_duration_ns": 810229,
+    "clock_id": "CLOCK_MONOTONIC_RAW",
+    "monotonic_raw_after_ns": 2145285859380,
+    "monotonic_raw_before_ns": 2145285049151,
+    "rails": [
+      {
+        "alternate_reliability_limit_uv": 1200000,
+        "current_default_uv": 800000,
+        "current_target_uv": 800000,
+        "margin_limit_uv": 0,
+        "maximum_limit_uv": 1200000,
+        "noise_unaware_vmin_uv": 800000,
+        "overvoltage_limit_uv": 1200000,
+        "rail": 0,
+        "reliability_limit_uv": 1200000,
+        "sensed_uv": 0,
+        "type": 3,
+        "vmin_limit_uv": 800000
+      },
+      {
+        "alternate_reliability_limit_uv": 1070000,
+        "current_default_uv": 870000,
+        "current_target_uv": 870000,
+        "margin_limit_uv": 0,
+        "maximum_limit_uv": 1000000,
+        "noise_unaware_vmin_uv": 870000,
+        "overvoltage_limit_uv": 1200000,
+        "rail": 1,
+        "reliability_limit_uv": 1000000,
+        "sensed_uv": 0,
+        "type": 3,
+        "vmin_limit_uv": 870000
+      }
+    ],
+    "returned_rail_mask": 3
+  },
+  "targets_uv": {
+    "MSVDD": 1150000,
+    "NVVDD": 950000
+  }
+}

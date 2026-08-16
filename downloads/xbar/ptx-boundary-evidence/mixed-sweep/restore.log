@@ -1,0 +1,91 @@
+restore_start=2026-08-16T09:09:32+08:00
+All done.
+All done.
+
+control_readback
+before: xbar_offset_khz=0 xbar_msvdd_offset_uv=0 measured_xbar_khz=1439590
+before valid_mask=0x00003fff relation0_type=3 ratio_raw=0x0000e660 ratio=0.899902344
+set command=0x2080d084 requested_raw=0x0000e660 requested_ratio=0.899902344 changed_bytes=0
+set_status=0x00000000
+after ratio_raw=0x0000e660 ratio=0.899902344 full_control_diff_bytes=0
+{
+  "control": {
+    "MSVDD": {
+      "alternate_rel_delta_uv": 0,
+      "ov_delta_uv": 0,
+      "rel_delta_uv": -50000,
+      "type": 3,
+      "vmin_delta_uv": 0
+    },
+    "NVVDD": {
+      "alternate_rel_delta_uv": 0,
+      "ov_delta_uv": 0,
+      "rel_delta_uv": 0,
+      "type": 3,
+      "vmin_delta_uv": 0
+    }
+  },
+  "status": {
+    "call_duration_ns": 493395,
+    "clock_id": "CLOCK_MONOTONIC_RAW",
+    "monotonic_raw_after_ns": 4182808224708,
+    "monotonic_raw_before_ns": 4182807731313,
+    "rails": [
+      {
+        "alternate_reliability_limit_uv": 1200000,
+        "current_default_uv": 800000,
+        "current_target_uv": 800000,
+        "margin_limit_uv": 0,
+        "maximum_limit_uv": 1200000,
+        "noise_unaware_vmin_uv": 800000,
+        "overvoltage_limit_uv": 1200000,
+        "rail": 0,
+        "reliability_limit_uv": 1200000,
+        "sensed_uv": 0,
+        "type": 3,
+        "vmin_limit_uv": 800000
+      },
+      {
+        "alternate_reliability_limit_uv": 1070000,
+        "current_default_uv": 870000,
+        "current_target_uv": 870000,
+        "margin_limit_uv": 0,
+        "maximum_limit_uv": 1000000,
+        "noise_unaware_vmin_uv": 870000,
+        "overvoltage_limit_uv": 1200000,
+        "rail": 1,
+        "reliability_limit_uv": 1000000,
+        "sensed_uv": 0,
+        "type": 3,
+        "vmin_limit_uv": 870000
+      }
+    ],
+    "returned_rail_mask": 3
+  }
+}
+
+start_services
+
+service_state
+active
+active
+active
+active
+active
+
+protected_processes
+1105 quill-kernel --ws-bind=127.0.0.1:7878
+1106 /home/user/.local/share/v2rayN/bin/sing_box/sing-box run -c /home/user/.config/sing-box/direct-download.json --disable-color
+1111 node /home/user/.local/share/fnm/aliases/default/bin/codex app-server --listen unix:///home/user/.codex/app-server-control/quill-app-server-core.sock
+1157 /home/user/.local/share/fnm/node-versions/v24.14.0/installation/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/bin/codex app-server --listen unix:///home/user/.codex/app-server-control/quill-app-server-core.sock
+8909 bash /usr/local/sbin/waterloop-fan-control
+10966 /home/user/.local/share/v2rayN/bin/sing_box/sing-box run -c /home/user/.local/share/v2rayN/binConfigs/config.json --disable-color
+163234 /bin/zsh -c set -e stamp=$(cat /tmp/ptx_xbar_mixed_stamp) root=$(cat /tmp/ptx_xbar_mixed_root) rails_unit=ptx-mixed-rails-$stamp ratio_unit=ptx-mixed-ratio-$stamp xbar_unit=$(cat /tmp/ptx_xbar_mixed_current_xbar_unit) {   printf 'restore_start=%s\n' "$(date --iso-8601=seconds)"   sudo systemctl stop "$xbar_unit.service"   sudo systemctl stop "$ratio_unit.service"   sudo nvidia-smi --reset-gpu-clocks || true   sudo nvidia-smi --reset-memory-clocks || true   sudo systemctl stop "$rails_unit.service"   sleep 2   printf '\ncontrol_readback\n'   sudo /home/user/rt_5090_project/xbar_clock_demo   sudo /home/user/rt_5090_project/prop_rel_ratio_probe --probe-access || true   sudo python /home/user/rt_5090_project/power_governor_reverse/bug_inverse/voltage_61057/nv_voltage_caps_61057.py read   printf '\nstart_services\n'   sudo systemctl start nvidia-persistenced.service lactd.service   sleep 2   sudo systemctl start gdm.service   sleep 5   printf '\nservice_state\n'   systemctl is-active gdm.service lactd.service nvidia-persistenced.service waterloop-fan-control.service v2rayn-sing-box.service   printf '\nprotected_processes\n'   pgrep -a -f 'quill-kernel|codex app-server|sing-box|waterloop-fan-control' || true   printf '\ngpu_state\n'   timeout --signal=KILL 3 nvidia-smi --query-gpu=driver_version,vbios_version,pstate,clocks.gr,clocks.mem,power.draw.instant,power.limit,temperature.gpu --format=csv,noheader,nounits   printf '\nlocalsearch_state\n'   systemctl --user is-active localsearch-3.service || true   printf 'restore_end=%s\n' "$(date --iso-8601=seconds)" } |& tee "$root/restore.log" sudo journalctl -k --since '2026-08-16 09:06:08' --no-pager > "$root/kernel-entire-sweep.log" rg -n 'NVRM: Xid|GPU has fallen off|AER:|PCIe Bus Error|kgspHealthCheck|RESET_REQUIRED' "$root/kernel-entire-sweep.log" > "$root/kernel-entire-sweep-alerts.txt" || true printf 'kernel_alert_count=%s\n' "$(wc -l < "$root/kernel-entire-sweep-alerts.txt")"
+163239 /bin/zsh -c set -e stamp=$(cat /tmp/ptx_xbar_mixed_stamp) root=$(cat /tmp/ptx_xbar_mixed_root) rails_unit=ptx-mixed-rails-$stamp ratio_unit=ptx-mixed-ratio-$stamp xbar_unit=$(cat /tmp/ptx_xbar_mixed_current_xbar_unit) {   printf 'restore_start=%s\n' "$(date --iso-8601=seconds)"   sudo systemctl stop "$xbar_unit.service"   sudo systemctl stop "$ratio_unit.service"   sudo nvidia-smi --reset-gpu-clocks || true   sudo nvidia-smi --reset-memory-clocks || true   sudo systemctl stop "$rails_unit.service"   sleep 2   printf '\ncontrol_readback\n'   sudo /home/user/rt_5090_project/xbar_clock_demo   sudo /home/user/rt_5090_project/prop_rel_ratio_probe --probe-access || true   sudo python /home/user/rt_5090_project/power_governor_reverse/bug_inverse/voltage_61057/nv_voltage_caps_61057.py read   printf '\nstart_services\n'   sudo systemctl start nvidia-persistenced.service lactd.service   sleep 2   sudo systemctl start gdm.service   sleep 5   printf '\nservice_state\n'   systemctl is-active gdm.service lactd.service nvidia-persistenced.service waterloop-fan-control.service v2rayn-sing-box.service   printf '\nprotected_processes\n'   pgrep -a -f 'quill-kernel|codex app-server|sing-box|waterloop-fan-control' || true   printf '\ngpu_state\n'   timeout --signal=KILL 3 nvidia-smi --query-gpu=driver_version,vbios_version,pstate,clocks.gr,clocks.mem,power.draw.instant,power.limit,temperature.gpu --format=csv,noheader,nounits   printf '\nlocalsearch_state\n'   systemctl --user is-active localsearch-3.service || true   printf 'restore_end=%s\n' "$(date --iso-8601=seconds)" } |& tee "$root/restore.log" sudo journalctl -k --since '2026-08-16 09:06:08' --no-pager > "$root/kernel-entire-sweep.log" rg -n 'NVRM: Xid|GPU has fallen off|AER:|PCIe Bus Error|kgspHealthCheck|RESET_REQUIRED' "$root/kernel-entire-sweep.log" > "$root/kernel-entire-sweep-alerts.txt" || true printf 'kernel_alert_count=%s\n' "$(wc -l < "$root/kernel-entire-sweep-alerts.txt")"
+
+gpu_state
+610.57.04, 98.02.2E.80.50, P0, 2572, 15001, 47.53, 800.00, 28
+
+localsearch_state
+inactive
+restore_end=2026-08-16T09:09:53+08:00

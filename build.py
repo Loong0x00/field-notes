@@ -4,6 +4,7 @@ from __future__ import annotations
 import csv
 import datetime as dt
 import hashlib
+import html
 import json
 import os
 import re
@@ -40,6 +41,33 @@ XBAR_STATUS_CSV = (
     DOWNLOADS / "xbar" / "astral-2001w-xoc-r610.57.04-xbar.csv"
 )
 XBAR_STATUS_PUBLIC = "/downloads/xbar/astral-2001w-xoc-r610.57.04-xbar.csv"
+VF_BANK_TABLE_MARKER = "[[vf-bank-tables:gb202-live-20260816]]"
+VF_BANK_TABLE_MARKER_PREFIX = "[[vf-bank-table:"
+VF_BANK_TABLES = {
+    "GPC": (
+        DOWNLOADS / "xbar" / "gb202-r610.57.04-gpc-live-vf.csv",
+        "/downloads/xbar/gb202-r610.57.04-gpc-live-vf.csv",
+    ),
+    "XBAR": (
+        DOWNLOADS / "xbar" / "gb202-r610.57.04-xbar-live-vf.csv",
+        "/downloads/xbar/gb202-r610.57.04-xbar-live-vf.csv",
+    ),
+    "SYS": (
+        DOWNLOADS / "xbar" / "gb202-r610.57.04-sys-live-vf.csv",
+        "/downloads/xbar/gb202-r610.57.04-sys-live-vf.csv",
+    ),
+    "NVD": (
+        DOWNLOADS / "xbar" / "gb202-r610.57.04-nvd-live-vf.csv",
+        "/downloads/xbar/gb202-r610.57.04-nvd-live-vf.csv",
+    ),
+}
+VBIOS_OFFSET_TABLE_MARKER = "[[vbios-offset-tables:rtx5090-20260816]]"
+VBIOS_OFFSET_PROJECTIONS_CSV = (
+    DOWNLOADS / "xbar" / "RTX5090_VBIOS_XBAR_OFFSET_PROJECTIONS_20260816.csv"
+)
+VBIOS_OFFSET_PROJECTIONS_PUBLIC = (
+    "/downloads/xbar/RTX5090_VBIOS_XBAR_OFFSET_PROJECTIONS_20260816.csv"
+)
 IMAGE_TAG = re.compile(r"<img (?P<attrs>[^>]*?)\s*/>")
 IMAGE_SRC = re.compile(r'\bsrc="([^"]+)"')
 
@@ -115,19 +143,235 @@ def render_xbar_status_disclosure() -> str:
 </details>"""
 
 
+def format_signed(value: float, decimals: int = 3) -> str:
+    return f"{value:+.{decimals}f}"
+
+
+def render_vf_bank_disclosure(bank: str) -> str:
+    try:
+        csv_path, public_path = VF_BANK_TABLES[bank]
+    except KeyError as error:
+        raise ValueError(f"unknown V/F bank: {bank}") from error
+
+    with csv_path.open(newline="", encoding="utf-8") as handle:
+        rows = list(csv.DictReader(handle))
+    if len(rows) != 127:
+        raise ValueError(f"{csv_path}: expected 127 points, found {len(rows)}")
+
+    table_rows: list[str] = []
+    for expected_point, row in enumerate(rows):
+        point = int(row["point"])
+        if point != expected_point:
+            raise ValueError(
+                f"{csv_path}: expected point {expected_point}, found {point}"
+            )
+        base_mhz = int(row["base_freq_16_16_mhz"]) / 65536
+        control_mhz = int(row["control_freq_offset_khz"]) / 1000
+        total_mhz = int(row["total_freq_offset_khz"]) / 1000
+        total_mv = int(row["total_volt_offset_uv"]) / 1000
+        table_rows.append(
+            "<tr>"
+            f'<td class="align-right">{point}</td>'
+            f'<td class="align-right">{int(row["flat_index"])}</td>'
+            f'<td class="align-right">{int(row["source_voltage_uv"]) / 1000:.0f}</td>'
+            f'<td class="align-right">{int(row["effective_voltage_uv"]) / 1000:.0f}</td>'
+            f'<td class="align-right">{base_mhz:.3f}</td>'
+            f'<td class="align-right">{format_signed(control_mhz)}</td>'
+            f'<td class="align-right">{int(row["effective_freq_mhz"])}</td>'
+            f'<td class="align-right">{format_signed(total_mhz)}</td>'
+            f'<td class="align-right">{format_signed(total_mv)}</td>'
+            "</tr>"
+        )
+
+    return f"""<details class="data-disclosure">
+<summary><span>{bank}: complete 127-point live V/F table</span></summary>
+<div class="data-disclosure-body">
+<p>Collapsed by default. STATUS and CONTROL were read from one snapshot; <a href="{public_path}">download the raw CSV</a>.</p>
+<div class="data-disclosure-scroll">
+<table>
+<thead><tr><th class="align-right">Point</th><th class="align-right">Flat index</th><th class="align-right">Source voltage (mV)</th><th class="align-right">Effective voltage (mV)</th><th class="align-right">Base (MHz)</th><th class="align-right">CONTROL Δ (MHz)</th><th class="align-right">Effective frequency (MHz)</th><th class="align-right">STATUS total Δf (MHz)</th><th class="align-right">STATUS total ΔV (mV)</th></tr></thead>
+<tbody>
+{"\n".join(table_rows)}
+</tbody>
+</table>
+</div>
+</div>
+</details>"""
+
+
+def render_vf_bank_disclosures() -> str:
+    return "\n".join(render_vf_bank_disclosure(bank) for bank in VF_BANK_TABLES)
+
+
+def render_vbios_offset_disclosures() -> str:
+    with VBIOS_OFFSET_PROJECTIONS_CSV.open(newline="", encoding="utf-8") as handle:
+        bios_rows = list(csv.DictReader(handle))
+    if len(bios_rows) != 15:
+        raise ValueError(
+            f"{VBIOS_OFFSET_PROJECTIONS_CSV}: expected 15 VBIOS rows, "
+            f"found {len(bios_rows)}"
+        )
+
+    xbar_csv, xbar_public = VF_BANK_TABLES["XBAR"]
+    with xbar_csv.open(newline="", encoding="utf-8") as handle:
+        xbar_rows = list(csv.DictReader(handle))
+    if len(xbar_rows) != 127:
+        raise ValueError(f"{xbar_csv}: expected 127 points, found {len(xbar_rows)}")
+
+    for expected_point, row in enumerate(xbar_rows):
+        point = int(row["point"])
+        base_raw = int(row["base_freq_16_16_mhz"])
+        if point != expected_point or base_raw % 65536 != 0:
+            raise ValueError(f"{xbar_csv}: invalid projection source point {point}")
+        base_mhz = base_raw // 65536
+        if (
+            int(row["control_freq_offset_khz"]) != 0
+            or int(row["total_freq_offset_khz"]) != 45000
+            or int(row["effective_freq_mhz"]) != base_mhz + 45
+        ):
+            raise ValueError(f"{xbar_csv}: point {point} is not a +45 MHz baseline")
+
+    evidence_labels = {
+        "live-status-source": "Live STATUS baseline",
+        "controlled-static-projection": "Controlled static projection",
+        "factoryoc-only-normalization": "FactoryOC-only normalization",
+    }
+    summary_rows: list[str] = []
+    offset_groups: dict[int, list[str]] = {}
+    for row in bios_rows:
+        factory_offset = int(row["factory_clock_delta_mhz"])
+        delta = int(row["delta_vs_live_astral_mhz"])
+        if delta != factory_offset - 45:
+            raise ValueError(
+                f"{VBIOS_OFFSET_PROJECTIONS_CSV}: inconsistent delta for "
+                f"{row['sample']}"
+            )
+        offset_groups.setdefault(factory_offset, []).append(row["sample"])
+        evidence = evidence_labels.get(row["evidence_class"])
+        if evidence is None:
+            raise ValueError(
+                f"{VBIOS_OFFSET_PROJECTIONS_CSV}: unknown evidence class "
+                f"{row['evidence_class']}"
+            )
+        summary_rows.append(
+            "<tr>"
+            f'<td>{html.escape(row["sample"])}</td>'
+            f'<td><code>{html.escape(row["internal_version"])}</code></td>'
+            f'<td class="align-right">{factory_offset:+d}</td>'
+            f'<td class="align-right">{delta:+d}</td>'
+            f'<td class="align-right">{int(row["factory_vpstate_target_mhz"])}</td>'
+            f'<td class="align-right">{int(row["projected_xbar_point0_mhz"])}</td>'
+            f'<td class="align-right">{int(row["projected_xbar_point63_mhz"])}</td>'
+            f'<td class="align-right">{int(row["projected_xbar_point126_mhz"])}</td>'
+            f'<td>{evidence}</td>'
+            "</tr>"
+        )
+
+    summary_content = f"""
+<p>Collapsed by default. The live baseline is the Astral 2001 W XOC at +45 MHz. The projection is <code>F_projected(point) = F_live_astral(point) + FactoryOC_candidate - 45 MHz</code>; <a href="{VBIOS_OFFSET_PROJECTIONS_PUBLIC}">download the 15-VBIOS comparison CSV</a>.</p>
+<div class="data-disclosure-scroll">
+<table>
+<thead><tr><th>Sample</th><th>Internal version</th><th class="align-right">FactoryOC (MHz)</th><th class="align-right">Δ from live baseline (MHz)</th><th class="align-right">Factory vPstate (MHz)</th><th class="align-right">Projected point 0</th><th class="align-right">Projected point 63</th><th class="align-right">Projected point 126</th><th>Evidence class</th></tr></thead>
+<tbody>
+{"\n".join(summary_rows)}
+</tbody>
+</table>
+</div>
+"""
+    projection_disclosures: list[str] = []
+
+    for factory_offset in sorted(offset_groups):
+        table_rows: list[str] = []
+        for row in xbar_rows:
+            base_mhz = int(row["base_freq_16_16_mhz"]) // 65536
+            projected_mhz = base_mhz + factory_offset
+            table_rows.append(
+                "<tr>"
+                f'<td class="align-right">{int(row["point"])}</td>'
+                f'<td class="align-right">{int(row["effective_voltage_uv"]) / 1000:.0f}</td>'
+                f'<td class="align-right">{base_mhz}</td>'
+                f'<td class="align-right">{factory_offset:+d}</td>'
+                f'<td class="align-right">{projected_mhz}</td>'
+                f'<td class="align-right">{int(row["effective_freq_mhz"])}</td>'
+                "</tr>"
+            )
+        sample_names = ", ".join(
+            html.escape(name) for name in offset_groups[factory_offset]
+        )
+        projection_disclosures.append(
+            f"""<details class="data-disclosure">
+<summary><span>FactoryOC {factory_offset:+d} MHz: complete 127-point conditional XBAR projection ({len(offset_groups[factory_offset])} VBIOS images)</span></summary>
+<div class="data-disclosure-body">
+<p>Samples: {sample_names}. This conditional projection replaces only the FactoryOC constant; <a href="{xbar_public}">live baseline CSV</a>.</p>
+<div class="data-disclosure-scroll">
+<table>
+<thead><tr><th class="align-right">Point</th><th class="align-right">Baseline STATUS voltage (mV)</th><th class="align-right">Base (MHz)</th><th class="align-right">Candidate FactoryOC (MHz)</th><th class="align-right">Projected effective frequency (MHz)</th><th class="align-right">Measured Astral +45 (MHz)</th></tr></thead>
+<tbody>
+{"\n".join(table_rows)}
+</tbody>
+</table>
+</div>
+</div>
+</details>"""
+        )
+    return f"""<details class="data-disclosure data-disclosure-group">
+<summary><span>15 RTX 5090 VBIOS images: FactoryOC overview and six complete XBAR projections</span></summary>
+<div class="data-disclosure-body">
+{summary_content}
+<div class="data-disclosure-nested">
+{"\n".join(projection_disclosures)}
+</div>
+</div>
+</details>"""
+
+
 def expand_post_components(body_html: str, path: Path) -> str:
     rendered_marker = f"<p>{XBAR_TABLE_MARKER}</p>"
     if rendered_marker in body_html:
         body_html = body_html.replace(rendered_marker, render_xbar_status_disclosure())
     if "[[xbar-table:" in body_html:
         raise ValueError(f"{path}: unknown XBAR table marker")
+    rendered_marker = f"<p>{VF_BANK_TABLE_MARKER}</p>"
+    if rendered_marker in body_html:
+        body_html = body_html.replace(rendered_marker, render_vf_bank_disclosures())
+    for bank in VF_BANK_TABLES:
+        marker = f"{VF_BANK_TABLE_MARKER_PREFIX}{bank}]]"
+        rendered_marker = f"<p>{marker}</p>"
+        if rendered_marker in body_html:
+            body_html = body_html.replace(
+                rendered_marker, render_vf_bank_disclosure(bank)
+            )
+    if "[[vf-bank-table" in body_html:
+        raise ValueError(f"{path}: unknown V/F bank table marker")
+    rendered_marker = f"<p>{VBIOS_OFFSET_TABLE_MARKER}</p>"
+    if rendered_marker in body_html:
+        body_html = body_html.replace(
+            rendered_marker, render_vbios_offset_disclosures()
+        )
+    if "[[vbios-offset-tables:" in body_html:
+        raise ValueError(f"{path}: unknown VBIOS offset table marker")
     return body_html
 
 
 def machine_markdown(body: str) -> str:
-    return body.replace(
+    body = body.replace(
         XBAR_TABLE_MARKER,
         f"[Complete 127-point STATUS table (CSV)]({XBAR_STATUS_PUBLIC})",
+    )
+    vf_links = "\n".join(
+        f"- [{bank} complete 127-point live V/F table (CSV)]({public_path})"
+        for bank, (_, public_path) in VF_BANK_TABLES.items()
+    )
+    body = body.replace(VF_BANK_TABLE_MARKER, vf_links)
+    for bank, (_, public_path) in VF_BANK_TABLES.items():
+        marker = f"{VF_BANK_TABLE_MARKER_PREFIX}{bank}]]"
+        body = body.replace(
+            marker,
+            f"[{bank} complete 127-point live V/F table (CSV)]({public_path})",
+        )
+    return body.replace(
+        VBIOS_OFFSET_TABLE_MARKER,
+        f"[RTX 5090 VBIOS FactoryOC/XBAR projection table (CSV)]({VBIOS_OFFSET_PROJECTIONS_PUBLIC})",
     )
 
 

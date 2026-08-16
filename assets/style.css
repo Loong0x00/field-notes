@@ -110,6 +110,8 @@ footer { padding: 20px 24px; display: flex; justify-content: space-between; colo
 .data-disclosure-scroll { max-height: 600px; overflow: auto; border: 1px solid var(--rule); }
 .post-body .data-disclosure table { display: table; width: 100%; margin: 0; white-space: nowrap; }
 .data-disclosure thead { position: sticky; top: 0; z-index: 1; background: var(--paper); }
+.data-disclosure-nested { margin-top: 22px; padding-left: 16px; border-left: 2px solid var(--rule); }
+.data-disclosure-nested > .data-disclosure { margin: 0 0 14px; }
 .evidence-box { margin-top: 72px; padding: 24px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); color: var(--faded); line-height: 1.8; }
 .evidence-box p { margin: 0 0 10px; }
 .back-link { display: inline-block; margin-top: 54px; font-family: "Noto Sans CJK SC", sans-serif; font-size: 13px; }

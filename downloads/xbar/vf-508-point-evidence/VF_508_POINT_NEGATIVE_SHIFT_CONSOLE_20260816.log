@@ -1,0 +1,88 @@
+before point=0 flat=0 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=450000 effective_uv=450000 effective_mhz=225 total_freq_offset_khz=45000 total_volt_offset_uv=0
+before point=63 flat=63 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=845000 effective_uv=845000 effective_mhz=2137 total_freq_offset_khz=907000 total_volt_offset_uv=0
+before point=126 flat=126 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=1240000 effective_uv=1240000 effective_mhz=3337 total_freq_offset_khz=112000 total_volt_offset_uv=0
+no-op readback: byte-identical GPC records
+bank shift verification: control_exact=127/127 requested=-1000 kHz
+effective: changed=125 same=2 opposite=0 exact=0/127 range=-15..0 MHz distribution=-8:83,-15:21,-7:21,0:2
+total_offset: changed=112 same=15 opposite=0 exact=0/127 range=-8000..0 kHz distribution=-8000:96,-7000:16,0:15
+shifted point=0 flat=0 control_type=0x11 control_freq_offset_khz=-1000 status_type=0x00001111 source_uv=450000 effective_uv=450000 effective_mhz=217 total_freq_offset_khz=37000 total_volt_offset_uv=0
+shifted point=63 flat=63 control_type=0x11 control_freq_offset_khz=-1000 status_type=0x00001111 source_uv=845000 effective_uv=845000 effective_mhz=2130 total_freq_offset_khz=900000 total_volt_offset_uv=0
+shifted point=126 flat=126 control_type=0x11 control_freq_offset_khz=-1000 status_type=0x00001111 source_uv=1240000 effective_uv=1240000 effective_mhz=3330 total_freq_offset_khz=105000 total_volt_offset_uv=0
+restored point=0 flat=0 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=450000 effective_uv=450000 effective_mhz=225 total_freq_offset_khz=45000 total_volt_offset_uv=0
+before point=0 flat=127 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=450000 effective_uv=450000 effective_mhz=225 total_freq_offset_khz=45000 total_volt_offset_uv=0
+before point=63 flat=190 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=845000 effective_uv=845000 effective_mhz=1987 total_freq_offset_khz=45000 total_volt_offset_uv=0
+before point=126 flat=253 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=1240000 effective_uv=1240000 effective_mhz=2812 total_freq_offset_khz=45000 total_volt_offset_uv=0
+no-op readback: byte-identical XBAR records
+bank shift verification: control_exact=127/127 requested=-1000 kHz
+effective: changed=127 same=0 opposite=0 exact=0/127 range=-15..-8 MHz distribution=-8:66,-15:61
+total_offset: changed=127 same=0 opposite=0 exact=0/127 range=-8000..-8000 kHz distribution=-8000:127
+shifted point=0 flat=127 control_type=0x11 control_freq_offset_khz=-1000 status_type=0x00001111 source_uv=450000 effective_uv=450000 effective_mhz=217 total_freq_offset_khz=37000 total_volt_offset_uv=0
+shifted point=63 flat=190 control_type=0x11 control_freq_offset_khz=-1000 status_type=0x00001111 source_uv=845000 effective_uv=845000 effective_mhz=1972 total_freq_offset_khz=37000 total_volt_offset_uv=0
+shifted point=126 flat=253 control_type=0x11 control_freq_offset_khz=-1000 status_type=0x00001111 source_uv=1240000 effective_uv=1240000 effective_mhz=2797 total_freq_offset_khz=37000 total_volt_offset_uv=0
+restored point=0 flat=127 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=450000 effective_uv=450000 effective_mhz=225 total_freq_offset_khz=45000 total_volt_offset_uv=0
+before point=0 flat=259 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=450000 effective_uv=450000 effective_mhz=180 total_freq_offset_khz=0 total_volt_offset_uv=0
+before point=63 flat=322 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=845000 effective_uv=845000 effective_mhz=1972 total_freq_offset_khz=0 total_volt_offset_uv=0
+before point=126 flat=385 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=1240000 effective_uv=1240000 effective_mhz=2842 total_freq_offset_khz=0 total_volt_offset_uv=0
+no-op readback: byte-identical SYS records
+bank shift verification: control_exact=127/127 requested=-1000 kHz
+effective: changed=127 same=0 opposite=0 exact=0/127 range=-8..-7 MHz distribution=-8:59,-7:68
+total_offset: changed=127 same=0 opposite=0 exact=0/127 range=-7000..-7000 kHz distribution=-7000:127
+shifted point=0 flat=259 control_type=0x11 control_freq_offset_khz=-1000 status_type=0x00001111 source_uv=450000 effective_uv=450000 effective_mhz=172 total_freq_offset_khz=-7000 total_volt_offset_uv=0
+shifted point=63 flat=322 control_type=0x11 control_freq_offset_khz=-1000 status_type=0x00001111 source_uv=845000 effective_uv=845000 effective_mhz=1965 total_freq_offset_khz=-7000 total_volt_offset_uv=0
+shifted point=126 flat=385 control_type=0x11 control_freq_offset_khz=-1000 status_type=0x00001111 source_uv=1240000 effective_uv=1240000 effective_mhz=2835 total_freq_offset_khz=-7000 total_volt_offset_uv=0
+restored point=0 flat=259 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=450000 effective_uv=450000 effective_mhz=180 total_freq_offset_khz=0 total_volt_offset_uv=0
+before point=0 flat=386 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=450000 effective_uv=450000 effective_mhz=180 total_freq_offset_khz=0 total_volt_offset_uv=0
+before point=63 flat=449 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=845000 effective_uv=845000 effective_mhz=1867 total_freq_offset_khz=0 total_volt_offset_uv=0
+before point=126 flat=512 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=1240000 effective_uv=1240000 effective_mhz=2715 total_freq_offset_khz=0 total_volt_offset_uv=0
+no-op readback: byte-identical NVD records
+bank shift verification: control_exact=127/127 requested=-1000 kHz
+effective: changed=127 same=0 opposite=0 exact=0/127 range=-8..-7 MHz distribution=-8:56,-7:71
+total_offset: changed=127 same=0 opposite=0 exact=0/127 range=-7000..-7000 kHz distribution=-7000:127
+shifted point=0 flat=386 control_type=0x11 control_freq_offset_khz=-1000 status_type=0x00001111 source_uv=450000 effective_uv=450000 effective_mhz=172 total_freq_offset_khz=-7000 total_volt_offset_uv=0
+shifted point=63 flat=449 control_type=0x11 control_freq_offset_khz=-1000 status_type=0x00001111 source_uv=845000 effective_uv=845000 effective_mhz=1860 total_freq_offset_khz=-7000 total_volt_offset_uv=0
+shifted point=126 flat=512 control_type=0x11 control_freq_offset_khz=-1000 status_type=0x00001111 source_uv=1240000 effective_uv=1240000 effective_mhz=2707 total_freq_offset_khz=-7000 total_volt_offset_uv=0
+restored point=0 flat=386 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=450000 effective_uv=450000 effective_mhz=180 total_freq_offset_khz=0 total_volt_offset_uv=0
+before point=0 flat=0 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=450000 effective_uv=450000 effective_mhz=225 total_freq_offset_khz=45000 total_volt_offset_uv=0
+before point=63 flat=63 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=845000 effective_uv=845000 effective_mhz=2137 total_freq_offset_khz=907000 total_volt_offset_uv=0
+before point=126 flat=126 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=1240000 effective_uv=1240000 effective_mhz=3337 total_freq_offset_khz=112000 total_volt_offset_uv=0
+no-op readback: byte-identical GPC records
+bank shift verification: control_exact=127/127 requested=-2000 kHz
+effective: changed=125 same=2 opposite=0 exact=0/127 range=-15..0 MHz distribution=-8:83,-15:21,-7:21,0:2
+total_offset: changed=127 same=0 opposite=0 exact=0/127 range=-8000..-7000 kHz distribution=-8000:96,-7000:31
+shifted point=0 flat=0 control_type=0x11 control_freq_offset_khz=-2000 status_type=0x00001111 source_uv=450000 effective_uv=450000 effective_mhz=217 total_freq_offset_khz=37000 total_volt_offset_uv=0
+shifted point=63 flat=63 control_type=0x11 control_freq_offset_khz=-2000 status_type=0x00001111 source_uv=845000 effective_uv=845000 effective_mhz=2130 total_freq_offset_khz=900000 total_volt_offset_uv=0
+shifted point=126 flat=126 control_type=0x11 control_freq_offset_khz=-2000 status_type=0x00001111 source_uv=1240000 effective_uv=1240000 effective_mhz=3330 total_freq_offset_khz=105000 total_volt_offset_uv=0
+restored point=0 flat=0 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=450000 effective_uv=450000 effective_mhz=225 total_freq_offset_khz=45000 total_volt_offset_uv=0
+before point=0 flat=127 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=450000 effective_uv=450000 effective_mhz=225 total_freq_offset_khz=45000 total_volt_offset_uv=0
+before point=63 flat=190 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=845000 effective_uv=845000 effective_mhz=1987 total_freq_offset_khz=45000 total_volt_offset_uv=0
+before point=126 flat=253 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=1240000 effective_uv=1240000 effective_mhz=2812 total_freq_offset_khz=45000 total_volt_offset_uv=0
+no-op readback: byte-identical XBAR records
+bank shift verification: control_exact=127/127 requested=-2000 kHz
+effective: changed=127 same=0 opposite=0 exact=0/127 range=-15..-8 MHz distribution=-8:66,-15:61
+total_offset: changed=127 same=0 opposite=0 exact=0/127 range=-8000..-8000 kHz distribution=-8000:127
+shifted point=0 flat=127 control_type=0x11 control_freq_offset_khz=-2000 status_type=0x00001111 source_uv=450000 effective_uv=450000 effective_mhz=217 total_freq_offset_khz=37000 total_volt_offset_uv=0
+shifted point=63 flat=190 control_type=0x11 control_freq_offset_khz=-2000 status_type=0x00001111 source_uv=845000 effective_uv=845000 effective_mhz=1972 total_freq_offset_khz=37000 total_volt_offset_uv=0
+shifted point=126 flat=253 control_type=0x11 control_freq_offset_khz=-2000 status_type=0x00001111 source_uv=1240000 effective_uv=1240000 effective_mhz=2797 total_freq_offset_khz=37000 total_volt_offset_uv=0
+restored point=0 flat=127 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=450000 effective_uv=450000 effective_mhz=225 total_freq_offset_khz=45000 total_volt_offset_uv=0
+before point=0 flat=259 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=450000 effective_uv=450000 effective_mhz=180 total_freq_offset_khz=0 total_volt_offset_uv=0
+before point=63 flat=322 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=845000 effective_uv=845000 effective_mhz=1972 total_freq_offset_khz=0 total_volt_offset_uv=0
+before point=126 flat=385 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=1240000 effective_uv=1240000 effective_mhz=2842 total_freq_offset_khz=0 total_volt_offset_uv=0
+no-op readback: byte-identical SYS records
+bank shift verification: control_exact=127/127 requested=-2000 kHz
+effective: changed=127 same=0 opposite=0 exact=0/127 range=-8..-7 MHz distribution=-8:59,-7:68
+total_offset: changed=127 same=0 opposite=0 exact=0/127 range=-7000..-7000 kHz distribution=-7000:127
+shifted point=0 flat=259 control_type=0x11 control_freq_offset_khz=-2000 status_type=0x00001111 source_uv=450000 effective_uv=450000 effective_mhz=172 total_freq_offset_khz=-7000 total_volt_offset_uv=0
+shifted point=63 flat=322 control_type=0x11 control_freq_offset_khz=-2000 status_type=0x00001111 source_uv=845000 effective_uv=845000 effective_mhz=1965 total_freq_offset_khz=-7000 total_volt_offset_uv=0
+shifted point=126 flat=385 control_type=0x11 control_freq_offset_khz=-2000 status_type=0x00001111 source_uv=1240000 effective_uv=1240000 effective_mhz=2835 total_freq_offset_khz=-7000 total_volt_offset_uv=0
+restored point=0 flat=259 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=450000 effective_uv=450000 effective_mhz=180 total_freq_offset_khz=0 total_volt_offset_uv=0
+before point=0 flat=386 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=450000 effective_uv=450000 effective_mhz=180 total_freq_offset_khz=0 total_volt_offset_uv=0
+before point=63 flat=449 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=845000 effective_uv=845000 effective_mhz=1867 total_freq_offset_khz=0 total_volt_offset_uv=0
+before point=126 flat=512 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=1240000 effective_uv=1240000 effective_mhz=2715 total_freq_offset_khz=0 total_volt_offset_uv=0
+no-op readback: byte-identical NVD records
+bank shift verification: control_exact=127/127 requested=-2000 kHz
+effective: changed=127 same=0 opposite=0 exact=0/127 range=-8..-7 MHz distribution=-8:56,-7:71
+total_offset: changed=127 same=0 opposite=0 exact=0/127 range=-7000..-7000 kHz distribution=-7000:127
+shifted point=0 flat=386 control_type=0x11 control_freq_offset_khz=-2000 status_type=0x00001111 source_uv=450000 effective_uv=450000 effective_mhz=172 total_freq_offset_khz=-7000 total_volt_offset_uv=0
+shifted point=63 flat=449 control_type=0x11 control_freq_offset_khz=-2000 status_type=0x00001111 source_uv=845000 effective_uv=845000 effective_mhz=1860 total_freq_offset_khz=-7000 total_volt_offset_uv=0
+shifted point=126 flat=512 control_type=0x11 control_freq_offset_khz=-2000 status_type=0x00001111 source_uv=1240000 effective_uv=1240000 effective_mhz=2707 total_freq_offset_khz=-7000 total_volt_offset_uv=0
+restored point=0 flat=386 control_type=0x11 control_freq_offset_khz=0 status_type=0x00001111 source_uv=450000 effective_uv=450000 effective_mhz=180 total_freq_offset_khz=0 total_volt_offset_uv=0

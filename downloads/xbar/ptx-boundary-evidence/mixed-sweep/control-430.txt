@@ -1,0 +1,1 @@
+before: xbar_offset_khz=430000 xbar_msvdd_offset_uv=0 measured_xbar_khz=2991799

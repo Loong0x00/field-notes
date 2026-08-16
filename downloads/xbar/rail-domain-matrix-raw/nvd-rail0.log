@@ -1,0 +1,25 @@
+before: nvd_offset_khz=0 nvd_nvvdd_offset_uv=0 measured_nvd_khz=2289292
+SET_CONTROL status=0x00000000
+readback: nvd_offset_khz=0 nvd_nvvdd_offset_uv=1000 measured_nvd_khz=1404395
+sample=0 measured_nvd_khz=1403494
+sample=1 measured_nvd_khz=1395420
+sample=2 measured_nvd_khz=1401296
+sample=3 measured_nvd_khz=1330099
+sample=4 measured_nvd_khz=1375613
+sample=5 measured_nvd_khz=2298257
+sample=6 measured_nvd_khz=1402550
+sample=7 measured_nvd_khz=1402310
+sample=8 measured_nvd_khz=1403850
+sample=9 measured_nvd_khz=1403575
+sample=10 measured_nvd_khz=1401150
+sample=11 measured_nvd_khz=1403327
+sample=12 measured_nvd_khz=1387807
+sample=13 measured_nvd_khz=2302065
+sample=14 measured_nvd_khz=1316292
+sample=15 measured_nvd_khz=1401360
+sample=16 measured_nvd_khz=1394285
+sample=17 measured_nvd_khz=1371610
+sample=18 measured_nvd_khz=1402298
+sample=19 measured_nvd_khz=1403106
+SET_CONTROL status=0x00000000
+restored: nvd_offset_khz=0 nvd_nvvdd_offset_uv=0 measured_nvd_khz=1403510

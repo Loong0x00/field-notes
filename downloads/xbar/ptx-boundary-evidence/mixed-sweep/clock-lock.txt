@@ -1,0 +1,12 @@
+GPU clocks set to "(gpuClkMin 3000, gpuClkMax 3000)" for GPU 00000000:01:00.0
+
+Warning: persistence mode is disabled on device 00000000:01:00.0. See the Known Issues section of the nvidia-smi(1) man page for more information. Run with [--help | -h] switch to get more information on how to enable persistence mode.
+All done.
+Power limit for GPU 00000000:01:00.0 was set to 800.00 W from 1000.00 W.
+
+Warning: persistence mode is disabled on device 00000000:01:00.0. See the Known Issues section of the nvidia-smi(1) man page for more information. Run with [--help | -h] switch to get more information on how to enable persistence mode.
+All done.
+Memory clocks set to "(memClkMin 15001, memClkMax 15001)" for GPU 00000000:01:00.0
+
+Warning: persistence mode is disabled on device 00000000:01:00.0. See the Known Issues section of the nvidia-smi(1) man page for more information. Run with [--help | -h] switch to get more information on how to enable persistence mode.
+All done.

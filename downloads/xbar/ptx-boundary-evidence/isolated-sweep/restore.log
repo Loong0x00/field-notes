@@ -1,0 +1,45 @@
+restore_start=2026-08-16T08:43:50+08:00
+All done.
+
+pre-daemon-readback
+before: xbar_offset_khz=0 xbar_msvdd_offset_uv=0 measured_xbar_khz=1439385
+before valid_mask=0x00003fff relation0_type=3 ratio_raw=0x0000e660 ratio=0.899902344
+set command=0x2080d084 requested_raw=0x0000e660 requested_ratio=0.899902344 changed_bytes=0
+set_status=0x00000000
+after ratio_raw=0x0000e660 ratio=0.899902344 full_control_diff_bytes=0
+
+services
+active
+active
+active
+active
+active
+active
+active
+active
+
+gpu
+P0, 2572, 15001, 47.27, 800.00, 30
+
+holders
+                     USER        PID ACCESS COMMAND
+/dev/nvidia0:        nvidia-persistenced  115133 F.... nvidia-persiste
+                     root      115329 F.... lact
+                     gdm-greeter  115566 F...m gnome-shell
+                     gdm-greeter  117429 F...m Xwayland
+                     gdm-greeter  117464 F...m mutter-x11-fram
+                     gdm-greeter  117470 F...m ibus-x11
+/dev/nvidiactl:      nvidia-persistenced  115133 F.... nvidia-persiste
+                     root      115329 F...m lact
+                     gdm-greeter  115566 F...m gnome-shell
+                     gdm-greeter  117429 F...m Xwayland
+                     gdm-greeter  117464 F...m mutter-x11-fram
+                     gdm-greeter  117470 F...m ibus-x11
+/dev/nvidia-modeset: nvidia-persistenced  115133 F.... nvidia-persiste
+                     gdm-greeter  115566 F.... gnome-shell
+                     gdm-greeter  117429 F.... Xwayland
+                     gdm-greeter  117464 F.... mutter-x11-fram
+                     gdm-greeter  117470 F.... ibus-x11
+
+kernel_alerts_since_sweep
+restore_end=2026-08-16T08:44:12+08:00

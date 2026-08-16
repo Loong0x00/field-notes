@@ -1,0 +1,25 @@
+before: sys_offset_khz=0 sys_nvvdd_offset_uv=0 measured_sys_khz=1462292
+SET_CONTROL status=0x00000000
+readback: sys_offset_khz=0 sys_nvvdd_offset_uv=1000 measured_sys_khz=1460048
+sample=0 measured_sys_khz=1896031
+sample=1 measured_sys_khz=1463880
+sample=2 measured_sys_khz=1462387
+sample=3 measured_sys_khz=1882734
+sample=4 measured_sys_khz=1462791
+sample=5 measured_sys_khz=1463236
+sample=6 measured_sys_khz=1461253
+sample=7 measured_sys_khz=1462885
+sample=8 measured_sys_khz=1462489
+sample=9 measured_sys_khz=1463074
+sample=10 measured_sys_khz=1463044
+sample=11 measured_sys_khz=1463877
+sample=12 measured_sys_khz=1462452
+sample=13 measured_sys_khz=1462565
+sample=14 measured_sys_khz=2408835
+sample=15 measured_sys_khz=2427764
+sample=16 measured_sys_khz=1463345
+sample=17 measured_sys_khz=1462811
+sample=18 measured_sys_khz=1461769
+sample=19 measured_sys_khz=1463250
+SET_CONTROL status=0x00000000
+restored: sys_offset_khz=0 sys_nvvdd_offset_uv=0 measured_sys_khz=1461469

@@ -1,0 +1,25 @@
+before: gpc_offset_khz=0 gpc_msvdd_offset_uv=0 measured_gpc_khz=225239
+SET_CONTROL status=0x00000000
+readback: gpc_offset_khz=0 gpc_msvdd_offset_uv=1000 measured_gpc_khz=225150
+sample=0 measured_gpc_khz=225024
+sample=1 measured_gpc_khz=224931
+sample=2 measured_gpc_khz=1611389
+sample=3 measured_gpc_khz=225243
+sample=4 measured_gpc_khz=225017
+sample=5 measured_gpc_khz=225064
+sample=6 measured_gpc_khz=225005
+sample=7 measured_gpc_khz=225162
+sample=8 measured_gpc_khz=224912
+sample=9 measured_gpc_khz=224863
+sample=10 measured_gpc_khz=225074
+sample=11 measured_gpc_khz=224973
+sample=12 measured_gpc_khz=225205
+sample=13 measured_gpc_khz=225003
+sample=14 measured_gpc_khz=3324764
+sample=15 measured_gpc_khz=224668
+sample=16 measured_gpc_khz=224794
+sample=17 measured_gpc_khz=225092
+sample=18 measured_gpc_khz=224940
+sample=19 measured_gpc_khz=225018
+SET_CONTROL status=0x00000000
+restored: gpc_offset_khz=0 gpc_msvdd_offset_uv=0 measured_gpc_khz=225335

@@ -1,0 +1,614 @@
+
+=== BASELINE compute ===
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_xbar2900-dynamic950-1150-ratio100-offset260_compute_20260816_083552
+pass=1
+kernel_alerts=0
+samples=95
+SYS_MHz min=2068.2 avg=2282.4 max=2637.5
+XBAR_MHz min=2891.8 avg=2902.1 max=2913.1
+samples=83
+GPC_MHz min=2235.0 avg=2287.3 max=2625.0
+Power_W min=69.0 avg=99.5 max=103.0
+Util_pct avg=27.4
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=compute seconds=5.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=compute pass=1 rounds=16689 errors=0 digest=916cc4de1d23b65b work_items=256 sm_covered=170 sm_expected=170 elapsed_s=5.000293 gib=88660.312 gib_s=17731.023
+END pass=1
+P0, 2235, 72.40, 31
+
+=== BASELINE l2 ===
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_xbar2900-dynamic950-1150-ratio100-offset260_l2_20260816_083557
+pass=1
+kernel_alerts=0
+samples=94
+SYS_MHz min=2496.7 avg=2564.8 max=2636.0
+XBAR_MHz min=2885.8 avg=2899.3 max=2912.1
+samples=82
+GPC_MHz min=2235.0 avg=2502.8 max=2565.0
+Power_W min=72.4 avg=375.9 max=404.8
+Util_pct avg=92.7
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=l2 seconds=5.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=l2 pass=1 rounds=960 errors=0 digest=02a9244c5afcbd40 work_items=245760 sm_covered=170 sm_expected=170 elapsed_s=5.000306 gib=2550.000 gib_s=509.969
+END pass=1
+P0, 2565, 77.90, 40
+
+=== BASELINE atomic ===
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_xbar2900-dynamic950-1150-ratio100-offset260_atomic_20260816_083603
+pass=1
+kernel_alerts=0
+samples=95
+SYS_MHz min=2595.1 avg=2615.1 max=2633.2
+XBAR_MHz min=2889.2 avg=2900.9 max=2909.2
+samples=82
+GPC_MHz min=2565.0 avg=2606.3 max=2617.0
+Power_W min=77.9 avg=121.8 max=126.7
+Util_pct avg=86.6
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=atomic seconds=5.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=atomic pass=1 rounds=13468 errors=0 digest=0000000000000000 work_items=256 sm_covered=170 sm_expected=170 elapsed_s=5.000327 gib=4471.797 gib_s=894.301
+END pass=1
+P0, 2617, 69.56, 32
+
+=== BASELINE vram ===
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_xbar2900-dynamic950-1150-ratio100-offset260_vram_20260816_083609
+pass=1
+kernel_alerts=0
+samples=85
+SYS_MHz min=2550.0 avg=2587.3 max=2625.8
+XBAR_MHz min=2880.5 avg=2895.7 max=2907.4
+samples=74
+GPC_MHz min=2572.0 avg=2584.7 max=2617.0
+Power_W min=69.6 avg=345.6 max=395.6
+Util_pct avg=93.6
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=vram seconds=5.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=vram pass=1 rounds=2237 errors=0 digest=fe1eee4e1ec5ef83 work_items=600490115072 sm_covered=170 sm_expected=170 elapsed_s=5.002197 gib=6711.000 gib_s=1341.610
+END pass=1
+P0, 2580, 154.47, 40
+before: xbar_offset_khz=300000 xbar_msvdd_offset_uv=0 measured_xbar_khz=2902660
+
+=== TARGET2940 compute ===
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_xbar2940-dynamic950-1150-ratio100-offset300_compute_20260816_083634
+pass=1
+kernel_alerts=0
+samples=95
+SYS_MHz min=2074.7 avg=2269.0 max=2619.1
+XBAR_MHz min=2891.4 avg=2902.1 max=2914.9
+samples=83
+GPC_MHz min=2242.0 avg=2292.5 max=2617.0
+Power_W min=67.3 avg=96.1 max=99.8
+Util_pct avg=26.3
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=compute seconds=5.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=compute pass=1 rounds=16082 errors=0 digest=b11219e4f278611b work_items=256 sm_covered=170 sm_expected=170 elapsed_s=5.000288 gib=85435.625 gib_s=17086.141
+END pass=1
+P0, 2242, 70.54, 31
+
+=== TARGET2940 l2 ===
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_xbar2940-dynamic950-1150-ratio100-offset300_l2_20260816_083640
+pass=1
+kernel_alerts=0
+samples=93
+SYS_MHz min=2485.8 avg=2560.2 max=2643.8
+XBAR_MHz min=2883.5 avg=2898.1 max=2907.1
+samples=81
+GPC_MHz min=2242.0 avg=2502.6 max=2557.0
+Power_W min=70.5 avg=367.3 max=388.8
+Util_pct avg=93.8
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=l2 seconds=5.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=l2 pass=1 rounds=960 errors=0 digest=02a9244c5afcbd40 work_items=245760 sm_covered=170 sm_expected=170 elapsed_s=5.001020 gib=2550.000 gib_s=509.896
+END pass=1
+P0, 2550, 74.19, 40
+
+=== TARGET2940 atomic ===
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_xbar2940-dynamic950-1150-ratio100-offset300_atomic_20260816_083646
+pass=1
+kernel_alerts=0
+samples=96
+SYS_MHz min=2598.0 avg=2615.6 max=2630.7
+XBAR_MHz min=2894.8 avg=2902.3 max=2915.2
+samples=83
+GPC_MHz min=2550.0 avg=2603.5 max=2610.0
+Power_W min=74.2 avg=120.0 max=125.9
+Util_pct avg=85.6
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=atomic seconds=5.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=atomic pass=1 rounds=13468 errors=0 digest=0000000000000000 work_items=256 sm_covered=170 sm_expected=170 elapsed_s=5.000079 gib=4471.797 gib_s=894.345
+END pass=1
+P0, 2617, 69.14, 32
+
+=== TARGET2940 vram ===
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_xbar2940-dynamic950-1150-ratio100-offset300_vram_20260816_083652
+pass=1
+kernel_alerts=0
+samples=87
+SYS_MHz min=2548.8 avg=2580.3 max=2631.3
+XBAR_MHz min=2885.5 avg=2896.7 max=2904.2
+samples=75
+GPC_MHz min=2572.0 avg=2584.7 max=2617.0
+Power_W min=69.1 avg=337.7 max=385.3
+Util_pct avg=96.0
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=vram seconds=5.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=vram pass=1 rounds=2236 errors=0 digest=43d0a40acb8ff244 work_items=600221679616 sm_covered=170 sm_expected=170 elapsed_s=5.000292 gib=6708.000 gib_s=1341.522
+END pass=1
+P0, 2580, 97.80, 40
+before valid_mask=0x00003fff relation0_type=3 ratio_raw=0x000103d7 ratio=1.014999390
+set command=0x2080d084 requested_raw=0x000103d7 requested_ratio=1.014999390 changed_bytes=0
+set_status=0x00000000
+after ratio_raw=0x000103d7 ratio=1.014999390 full_control_diff_bytes=0
+before: xbar_offset_khz=260000 xbar_msvdd_offset_uv=0 measured_xbar_khz=2928809
+
+=== RATIO1015 compute ===
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_ratio1015-xbaroffset260-dynamic950-1150_compute_20260816_083748
+pass=1
+kernel_alerts=0
+samples=96
+SYS_MHz min=2067.4 avg=2265.2 max=2630.0
+XBAR_MHz min=2925.5 avg=2938.0 max=2948.3
+samples=83
+GPC_MHz min=2242.0 avg=2299.7 max=2625.0
+Power_W min=72.0 avg=101.1 max=104.2
+Util_pct avg=27.5
+samples=23
+NVVDD_target_mV min=945.0 avg=947.6 max=950.0
+MSVDD_target_mV min=1120.0 avg=1122.2 max=1125.0
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=compute seconds=5.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=compute pass=1 rounds=16121 errors=0 digest=e7db9f555780780b work_items=256 sm_covered=170 sm_expected=170 elapsed_s=5.000220 gib=85642.812 gib_s=17127.809
+END pass=1
+P0, 2370, 70.77, 32
+
+=== RATIO1015 l2 ===
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_ratio1015-xbaroffset260-dynamic950-1150_l2_20260816_083754
+pass=1
+kernel_alerts=0
+samples=93
+SYS_MHz min=2488.6 avg=2561.7 max=2636.9
+XBAR_MHz min=2919.6 avg=2934.6 max=2945.3
+samples=82
+GPC_MHz min=2370.0 avg=2532.3 max=2565.0
+Power_W min=70.8 avg=382.0 max=428.1
+Util_pct avg=88.9
+samples=22
+NVVDD_target_mV min=945.0 avg=948.6 max=950.0
+MSVDD_target_mV min=1125.0 avg=1138.6 max=1145.0
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=l2 seconds=5.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=l2 pass=1 rounds=972 errors=0 digest=39180e5a1c1fe604 work_items=248832 sm_covered=170 sm_expected=170 elapsed_s=5.000710 gib=2581.875 gib_s=516.302
+END pass=1
+P0, 2550, 77.89, 37
+
+=== RATIO1015 atomic ===
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_ratio1015-xbaroffset260-dynamic950-1150_atomic_20260816_083800
+pass=1
+kernel_alerts=0
+samples=96
+SYS_MHz min=2600.0 avg=2617.2 max=2629.5
+XBAR_MHz min=2929.0 avg=2939.8 max=2952.4
+samples=83
+GPC_MHz min=2550.0 avg=2599.9 max=2610.0
+Power_W min=77.9 avg=128.2 max=133.1
+Util_pct avg=89.1
+samples=23
+NVVDD_target_mV min=945.0 avg=947.6 max=950.0
+MSVDD_target_mV min=1130.0 avg=1132.8 max=1140.0
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=atomic seconds=5.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=atomic pass=1 rounds=13628 errors=0 digest=0000000000000000 work_items=256 sm_covered=170 sm_expected=170 elapsed_s=5.000349 gib=4524.922 gib_s=904.921
+END pass=1
+P0, 2610, 72.42, 33
+
+=== RATIO1015 vram ===
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_ratio1015-xbaroffset260-dynamic950-1150_vram_20260816_083806
+pass=1
+kernel_alerts=0
+samples=87
+SYS_MHz min=2542.0 avg=2580.7 max=2628.4
+XBAR_MHz min=2920.4 avg=2932.8 max=2943.6
+samples=74
+GPC_MHz min=2580.0 avg=2583.9 max=2610.0
+Power_W min=72.4 avg=367.2 max=404.2
+Util_pct avg=89.2
+samples=22
+NVVDD_target_mV min=945.0 avg=948.2 max=950.0
+MSVDD_target_mV min=1125.0 avg=1135.0 max=1140.0
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=vram seconds=5.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=vram pass=1 rounds=2238 errors=0 digest=b86d389171fbecc2 work_items=600758550528 sm_covered=170 sm_expected=170 elapsed_s=5.001442 gib=6714.000 gib_s=1342.413
+END pass=1
+P0, 2610, 75.27, 36
+before valid_mask=0x00003fff relation0_type=3 ratio_raw=0x000107ae ratio=1.029998779
+set command=0x2080d084 requested_raw=0x000107ae requested_ratio=1.029998779 changed_bytes=0
+set_status=0x00000000
+after ratio_raw=0x000107ae ratio=1.029998779 full_control_diff_bytes=0
+before: xbar_offset_khz=260000 xbar_msvdd_offset_uv=0 measured_xbar_khz=2971747
+
+=== RATIO1030 compute ===
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_ratio1030-xbaroffset260-dynamic950-1150_compute_20260816_083828
+pass=1
+kernel_alerts=0
+samples=96
+SYS_MHz min=2067.2 avg=2276.4 max=2637.0
+XBAR_MHz min=2955.4 avg=2967.8 max=2979.7
+samples=82
+GPC_MHz min=2242.0 avg=2293.4 max=2625.0
+Power_W min=72.3 avg=105.0 max=107.5
+Util_pct avg=28.6
+samples=23
+NVVDD_target_mV min=945.0 avg=947.4 max=950.0
+MSVDD_target_mV min=1145.0 avg=1147.2 max=1150.0
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=compute seconds=5.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=compute pass=1 rounds=16163 errors=0 digest=47ae9fff2249762e work_items=256 sm_covered=170 sm_expected=170 elapsed_s=5.000021 gib=85865.938 gib_s=17173.114
+END pass=1
+P0, 2242, 87.53, 33
+
+=== RATIO1030 l2 ===
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_ratio1030-xbaroffset260-dynamic950-1150_l2_20260816_083833
+pass=1
+kernel_alerts=0
+samples=94
+SYS_MHz min=2484.2 avg=2562.1 max=2636.8
+XBAR_MHz min=2922.8 avg=2942.8 max=2964.7
+samples=81
+GPC_MHz min=2242.0 avg=2503.2 max=2565.0
+Power_W min=77.0 avg=401.8 max=430.3
+Util_pct avg=92.6
+samples=23
+NVVDD_target_mV min=945.0 avg=946.7 max=950.0
+MSVDD_target_mV min=1145.0 avg=1147.0 max=1150.0
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=l2 seconds=5.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=l2 pass=1 rounds=975 errors=0 digest=86b3c8dd8c68b035 work_items=249600 sm_covered=170 sm_expected=170 elapsed_s=5.003319 gib=2589.844 gib_s=517.625
+END pass=1
+P0, 2572, 79.72, 41
+
+=== RATIO1030 atomic ===
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_ratio1030-xbaroffset260-dynamic950-1150_atomic_20260816_083839
+pass=1
+kernel_alerts=0
+samples=96
+SYS_MHz min=2600.9 avg=2618.1 max=2634.7
+XBAR_MHz min=2950.4 avg=2960.3 max=2971.2
+samples=83
+GPC_MHz min=2572.0 avg=2605.4 max=2610.0
+Power_W min=79.7 avg=129.5 max=137.3
+Util_pct avg=84.4
+samples=23
+NVVDD_target_mV min=945.0 avg=948.3 max=950.0
+MSVDD_target_mV min=1145.0 avg=1147.6 max=1150.0
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=atomic seconds=5.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=atomic pass=1 rounds=13735 errors=0 digest=74e6f5b41f98f800 work_items=256 sm_covered=170 sm_expected=170 elapsed_s=5.000182 gib=4560.449 gib_s=912.057
+END pass=1
+P0, 2617, 74.24, 33
+
+=== RATIO1030 vram ===
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_ratio1030-xbaroffset260-dynamic950-1150_vram_20260816_083845
+pass=1
+kernel_alerts=0
+samples=86
+SYS_MHz min=2549.4 avg=2585.8 max=2625.3
+XBAR_MHz min=2933.2 avg=2942.3 max=2970.1
+samples=75
+GPC_MHz min=2580.0 avg=2585.4 max=2617.0
+Power_W min=74.2 avg=355.6 max=404.5
+Util_pct avg=94.7
+samples=22
+NVVDD_target_mV min=945.0 avg=947.7 max=950.0
+MSVDD_target_mV min=1145.0 avg=1147.7 max=1150.0
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=vram seconds=5.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=vram pass=1 rounds=2238 errors=0 digest=b86d389171fbecc2 work_items=600758550528 sm_covered=170 sm_expected=170 elapsed_s=5.000651 gib=6714.000 gib_s=1342.625
+END pass=1
+P0, 2580, 87.47, 40
+before valid_mask=0x00003fff relation0_type=3 ratio_raw=0x00010b85 ratio=1.044998169
+set command=0x2080d084 requested_raw=0x00010b85 requested_ratio=1.044998169 changed_bytes=0
+set_status=0x00000000
+after ratio_raw=0x00010b85 ratio=1.044998169 full_control_diff_bytes=0
+before: xbar_offset_khz=260000 xbar_msvdd_offset_uv=0 measured_xbar_khz=2970583
+
+=== RATIO1045 compute ===
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_ratio1045-xbaroffset260-dynamic950-1150_compute_20260816_083914
+pass=1
+kernel_alerts=0
+samples=96
+SYS_MHz min=2065.8 avg=2274.0 max=2630.9
+XBAR_MHz min=2956.5 avg=2967.6 max=2978.4
+samples=83
+GPC_MHz min=2242.0 avg=2295.1 max=2625.0
+Power_W min=72.3 avg=103.4 max=107.4
+Util_pct avg=26.7
+samples=22
+NVVDD_target_mV min=945.0 avg=947.5 max=950.0
+MSVDD_target_mV min=1145.0 avg=1147.3 max=1150.0
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=compute seconds=5.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=compute pass=1 rounds=16165 errors=0 digest=e59661a6a29ff25b work_items=256 sm_covered=170 sm_expected=170 elapsed_s=5.000230 gib=85876.562 gib_s=17174.521
+END pass=1
+P0, 2512, 72.41, 32
+
+=== RATIO1045 atomic ===
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_ratio1045-xbaroffset260-dynamic950-1150_atomic_20260816_083920
+pass=1
+kernel_alerts=0
+samples=95
+SYS_MHz min=2598.6 avg=2621.8 max=2638.4
+XBAR_MHz min=2956.4 avg=2967.4 max=2980.4
+samples=83
+GPC_MHz min=2512.0 avg=2601.8 max=2617.0
+Power_W min=72.4 avg=126.5 max=136.1
+Util_pct avg=90.6
+samples=23
+NVVDD_target_mV min=945.0 avg=948.3 max=950.0
+MSVDD_target_mV min=1145.0 avg=1147.6 max=1150.0
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=atomic seconds=5.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=atomic pass=1 rounds=13770 errors=0 digest=0000000000000000 work_items=256 sm_covered=170 sm_expected=170 elapsed_s=5.000325 gib=4572.070 gib_s=914.355
+END pass=1
+P0, 2617, 93.52, 35
+
+=== RATIO1045 l2 ===
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_ratio1045-xbaroffset260-dynamic950-1150_l2_20260816_083925
+pass=1
+kernel_alerts=0
+samples=94
+SYS_MHz min=2480.8 avg=2562.5 max=2638.3
+XBAR_MHz min=2925.6 avg=2941.8 max=2971.4
+samples=81
+GPC_MHz min=2550.0 avg=2566.5 max=2617.0
+Power_W min=93.5 avg=399.4 max=430.4
+Util_pct avg=91.4
+samples=22
+NVVDD_target_mV min=945.0 avg=948.0 max=950.0
+MSVDD_target_mV min=1145.0 avg=1147.3 max=1150.0
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=l2 seconds=5.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=l2 pass=1 rounds=975 errors=0 digest=86b3c8dd8c68b035 work_items=249600 sm_covered=170 sm_expected=170 elapsed_s=5.003905 gib=2589.844 gib_s=517.565
+END pass=1
+P0, 2572, 79.83, 41
+
+=== RATIO1045 vram ===
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_ratio1045-xbaroffset260-dynamic950-1150_vram_20260816_083931
+pass=1
+kernel_alerts=0
+samples=86
+SYS_MHz min=2548.5 avg=2582.0 max=2630.8
+XBAR_MHz min=2933.6 avg=2941.0 max=2961.4
+samples=74
+GPC_MHz min=2572.0 avg=2578.3 max=2580.0
+Power_W min=79.8 avg=365.5 max=405.5
+Util_pct avg=87.8
+samples=22
+NVVDD_target_mV min=945.0 avg=947.5 max=950.0
+MSVDD_target_mV min=1145.0 avg=1147.5 max=1150.0
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=vram seconds=5.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=vram pass=1 rounds=2238 errors=0 digest=b86d389171fbecc2 work_items=600758550528 sm_covered=170 sm_expected=170 elapsed_s=5.000384 gib=6714.000 gib_s=1342.697
+END pass=1
+P0, 2580, 77.12, 37
+before valid_mask=0x00003fff relation0_type=3 ratio_raw=0x0000e660 ratio=0.899902344
+set command=0x2080d084 requested_raw=0x0000e660 requested_ratio=0.899902344 changed_bytes=0
+set_status=0x00000000
+after ratio_raw=0x0000e660 ratio=0.899902344 full_control_diff_bytes=0
+before: xbar_offset_khz=300000 xbar_msvdd_offset_uv=0 measured_xbar_khz=2700655
+
+=== OCNLIKE COMPUTE SHORT ===
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_ocnlike-core3000-nv980-ms1065-ratio090-xbar300_compute_20260816_084020
+pass=1
+kernel_alerts=0
+samples=41
+SYS_MHz min=2383.6 avg=2567.9 max=2737.8
+XBAR_MHz min=2689.5 avg=2699.1 max=2709.8
+samples=34
+GPC_MHz min=2520.0 avg=2606.5 max=2730.0
+Power_W min=61.5 avg=91.7 max=98.8
+Util_pct avg=22.5
+samples=10
+NVVDD_target_mV min=970.0 avg=973.5 max=975.0
+MSVDD_target_mV min=980.0 avg=983.5 max=985.0
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=compute seconds=2.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=compute pass=1 rounds=6637 errors=0 digest=9668ea58401bc10b work_items=256 sm_covered=170 sm_expected=170 elapsed_s=2.000035 gib=35259.062 gib_s=17629.223
+END pass=1
+P0, 2722, 63.53, 32
+before valid_mask=0x00003fff relation0_type=3 ratio_raw=0x00010000 ratio=1.000000000
+set command=0x2080d084 requested_raw=0x00010000 requested_ratio=1.000000000 changed_bytes=0
+set_status=0x00000000
+after ratio_raw=0x00010000 ratio=1.000000000 full_control_diff_bytes=0
+before: xbar_offset_khz=300000 xbar_msvdd_offset_uv=0 measured_xbar_khz=2874110
+
+=== TRUE3K COMPUTE SHORT ===
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_true3k-core3000-nv980-ms1065-ratio100-xbar300_compute_20260816_084044
+pass=1
+kernel_alerts=0
+samples=41
+SYS_MHz min=2381.7 avg=2565.2 max=2738.2
+XBAR_MHz min=2859.0 avg=2871.2 max=2881.6
+samples=34
+GPC_MHz min=2512.0 avg=2579.9 max=2730.0
+Power_W min=68.9 avg=98.0 max=105.2
+Util_pct avg=19.8
+samples=10
+NVVDD_target_mV min=970.0 avg=972.5 max=975.0
+MSVDD_target_mV min=1060.0 avg=1062.5 max=1065.0
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=compute seconds=2.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=compute pass=1 rounds=6516 errors=0 digest=46f961100294b884 work_items=256 sm_covered=170 sm_expected=170 elapsed_s=2.000166 gib=34616.250 gib_s=17306.684
+END pass=1
+P0, 2542, 70.48, 32
+
+=== OFFSET330 TRUE3K SCAN ===
+before: xbar_offset_khz=330000 xbar_msvdd_offset_uv=0 measured_xbar_khz=2900011
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_scan-core3000-nv980-ms1065-ratio100-xbar330_compute_20260816_084111
+pass=1
+kernel_alerts=0
+samples=23
+SYS_MHz min=2385.5 avg=2591.9 max=2741.6
+XBAR_MHz min=2894.9 avg=2900.6 max=2910.4
+samples=18
+GPC_MHz min=2520.0 avg=2636.7 max=2730.0
+Power_W min=69.2 avg=90.8 max=105.8
+Util_pct avg=12.0
+samples=6
+NVVDD_target_mV min=970.0 avg=973.3 max=975.0
+MSVDD_target_mV min=1060.0 avg=1061.7 max=1065.0
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=compute seconds=1.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=compute pass=1 rounds=3345 errors=0 digest=a97a3777f573ce1b work_items=256 sm_covered=170 sm_expected=170 elapsed_s=1.000016 gib=17770.312 gib_s=17770.024
+END pass=1
+P0, 2520, 69.85, 31
+
+=== OFFSET360 TRUE3K SCAN ===
+before: xbar_offset_khz=360000 xbar_msvdd_offset_uv=0 measured_xbar_khz=2927422
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_scan-core3000-nv980-ms1065-ratio100-xbar360_compute_20260816_084114
+pass=1
+kernel_alerts=0
+samples=23
+SYS_MHz min=2378.3 avg=2547.5 max=2743.7
+XBAR_MHz min=2919.3 avg=2931.1 max=2937.5
+samples=18
+GPC_MHz min=2520.0 avg=2660.0 max=2730.0
+Power_W min=69.3 avg=95.7 max=105.4
+Util_pct avg=20.4
+samples=5
+NVVDD_target_mV min=970.0 avg=973.0 max=975.0
+MSVDD_target_mV min=1060.0 avg=1063.0 max=1065.0
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=compute seconds=1.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=compute pass=1 rounds=3340 errors=0 digest=5e3a4c1682020b1c work_items=256 sm_covered=170 sm_expected=170 elapsed_s=1.000141 gib=17743.750 gib_s=17741.249
+END pass=1
+P0, 2617, 83.68, 32
+
+=== OFFSET390 TRUE3K SCAN ===
+before: xbar_offset_khz=390000 xbar_msvdd_offset_uv=0 measured_xbar_khz=2954341
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_scan-core3000-nv980-ms1065-ratio100-xbar390_compute_20260816_084117
+pass=1
+kernel_alerts=0
+samples=23
+SYS_MHz min=2367.0 avg=2539.0 max=2743.6
+XBAR_MHz min=2955.1 avg=2961.4 max=2969.3
+samples=18
+GPC_MHz min=2520.0 avg=2683.3 max=2730.0
+Power_W min=69.3 avg=93.0 max=105.3
+Util_pct avg=18.7
+samples=6
+NVVDD_target_mV min=970.0 avg=971.7 max=975.0
+MSVDD_target_mV min=1060.0 avg=1060.8 max=1065.0
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=compute seconds=1.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=compute pass=1 rounds=3338 errors=0 digest=ffe2f65f01d98f73 work_items=256 sm_covered=170 sm_expected=170 elapsed_s=1.000202 gib=17733.125 gib_s=17729.538
+END pass=1
+P0, 2730, 70.51, 31
+
+=== OFFSET420 TRUE3K SCAN ===
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_scan-core3000-nv980-ms1065-ratio100-xbar420_compute_20260816_084134
+pass=1
+kernel_alerts=0
+samples=23
+SYS_MHz min=2368.9 avg=2555.5 max=2739.0
+XBAR_MHz min=2981.9 avg=2992.1 max=3004.0
+samples=19
+GPC_MHz min=2520.0 avg=2641.6 max=2730.0
+Power_W min=69.2 avg=90.9 max=105.1
+Util_pct avg=11.8
+samples=6
+NVVDD_target_mV min=970.0 avg=971.7 max=975.0
+MSVDD_target_mV min=1060.0 avg=1061.7 max=1065.0
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=compute seconds=1.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=compute pass=1 rounds=3329 errors=0 digest=df42b1060363f0db work_items=256 sm_covered=170 sm_expected=170 elapsed_s=1.000111 gib=17685.312 gib_s=17683.341
+END pass=1
+P0, 2535, 71.14, 31
+
+=== OFFSET430 TRUE3K SCAN ===
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_scan-core3000-nv980-ms1065-ratio100-xbar430_compute_20260816_084137
+pass=1
+kernel_alerts=0
+samples=23
+SYS_MHz min=2386.2 avg=2580.9 max=2738.8
+XBAR_MHz min=2980.8 avg=2991.4 max=2999.8
+samples=18
+GPC_MHz min=2512.0 avg=2669.4 max=2730.0
+Power_W min=69.0 avg=96.1 max=107.1
+Util_pct avg=20.9
+samples=6
+NVVDD_target_mV min=970.0 avg=970.8 max=975.0
+MSVDD_target_mV min=1060.0 avg=1061.7 max=1065.0
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=compute seconds=1.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=compute pass=1 rounds=3437 errors=0 digest=3be11f9bd33c100b work_items=256 sm_covered=170 sm_expected=170 elapsed_s=1.000208 gib=18259.062 gib_s=18255.264
+END pass=1
+P0, 2647, 74.18, 32
+
+=== OFFSET440 TRUE3K COMPUTE ===
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_scan-core3000-nv980-ms1065-ratio100-xbar440_compute_20260816_084154
+pass=1
+kernel_alerts=0
+samples=41
+SYS_MHz min=2375.0 avg=2568.0 max=2740.8
+XBAR_MHz min=2988.1 avg=3000.1 max=3010.5
+samples=34
+GPC_MHz min=2512.0 avg=2569.7 max=2730.0
+Power_W min=68.7 avg=97.3 max=105.3
+Util_pct avg=21.3
+samples=10
+NVVDD_target_mV min=970.0 avg=972.0 max=975.0
+MSVDD_target_mV min=1055.0 avg=1057.0 max=1060.0
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=compute seconds=2.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=compute pass=1 rounds=6904 errors=0 digest=02d7f42e4149b138 work_items=256 sm_covered=170 sm_expected=170 elapsed_s=2.000217 gib=36677.500 gib_s=18336.758
+END pass=1
+P0, 2512, 69.67, 31
+
+=== OFFSET440 TRUE3K ATOMIC ===
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_true3k-core3000-nv980-ms1065-ratio100-xbar440_atomic_20260816_084205
+pass=1
+kernel_alerts=0
+samples=59
+SYS_MHz min=2718.7 avg=2730.4 max=2743.9
+XBAR_MHz min=2986.3 avg=2997.7 max=3006.0
+samples=50
+GPC_MHz min=2730.0 avg=2730.0 max=2730.0
+Power_W min=68.8 avg=120.6 max=128.1
+Util_pct avg=84.5
+samples=14
+NVVDD_target_mV min=970.0 avg=971.8 max=975.0
+MSVDD_target_mV min=1055.0 avg=1057.1 max=1060.0
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=atomic seconds=3.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=atomic pass=1 rounds=8327 errors=0 digest=74e6f5b41f98f800 work_items=256 sm_covered=170 sm_expected=170 elapsed_s=3.000262 gib=2764.824 gib_s=921.527
+END pass=1
+P0, 2730, 71.26, 32
+
+=== OFFSET440 TRUE3K L2 ===
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_true3k-core3000-nv980-ms1065-ratio100-xbar440_l2_20260816_084218
+pass=0
+kernel_alerts=0
+samples=58
+SYS_MHz min=2685.6 avg=2699.5 max=2738.7
+XBAR_MHz min=2965.8 avg=2988.6 max=3004.6
+samples=50
+GPC_MHz min=2692.0 avg=2703.9 max=2730.0
+Power_W min=68.8 avg=347.5 max=394.5
+Util_pct avg=86.0
+samples=14
+NVVDD_target_mV min=970.0 avg=974.3 max=975.0
+MSVDD_target_mV min=1055.0 avg=1062.1 max=1065.0
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=l2 seconds=3.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=l2 pass=0 rounds=594 errors=1 digest=067241ad79cc61e6 work_items=152064 sm_covered=170 sm_expected=170 elapsed_s=3.001520 gib=1577.812 gib_s=525.671
+END pass=0
+P0, 2722, 76.68, 38
+
+=== OFFSET430 L2 VERIFY ===
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_verify-core3000-nv980-ms1065-ratio100-xbar430_l2_20260816_084258
+pass=1
+kernel_alerts=0
+samples=94
+SYS_MHz min=2681.1 avg=2699.0 max=2731.4
+XBAR_MHz min=2959.9 avg=2974.2 max=2999.5
+samples=82
+GPC_MHz min=2692.0 avg=2698.7 max=2730.0
+Power_W min=68.9 avg=359.7 max=393.5
+Util_pct avg=90.6
+samples=23
+NVVDD_target_mV min=970.0 avg=973.7 max=975.0
+MSVDD_target_mV min=1060.0 avg=1063.3 max=1065.0
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=l2 seconds=5.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=l2 pass=1 rounds=985 errors=0 digest=89658be902b0a783 work_items=252160 sm_covered=170 sm_expected=170 elapsed_s=5.000875 gib=2616.406 gib_s=523.190
+END pass=1
+runner_rc=0
+P0, 2700, 302.28, 42
+
+=== OFFSET430 VRAM VERIFY ===
+output_dir=/home/user/rt_5090_project/benchmark_logs/ptx_xbar_verify-core3000-nv980-ms1065-ratio100-xbar430_vram_20260816_084313
+pass=1
+kernel_alerts=0
+samples=86
+SYS_MHz min=2698.2 avg=2711.9 max=2742.4
+XBAR_MHz min=2961.7 avg=2972.8 max=2991.4
+samples=74
+GPC_MHz min=2707.0 avg=2710.7 max=2730.0
+Power_W min=69.2 avg=363.7 max=387.1
+Util_pct avg=93.2
+samples=22
+NVVDD_target_mV min=970.0 avg=972.7 max=975.0
+MSVDD_target_mV min=1060.0 avg=1063.0 max=1065.0
+BEGIN gpu=NVIDIA GeForce RTX 5090 cc=12.0 sms=170 blocks=680 threads=256 mode=vram seconds=5.000 target_sm=-1 l2_mib=32 vram_mib=1024
+RESULT mode=vram pass=1 rounds=2241 errors=0 digest=e758175b6b9de47f work_items=601563856896 sm_covered=170 sm_expected=170 elapsed_s=5.001909 gib=6723.000 gib_s=1344.087
+END pass=1
+P0, 2722, 77.52, 37

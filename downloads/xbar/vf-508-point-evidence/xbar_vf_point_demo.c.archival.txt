@@ -1,0 +1,1028 @@
+#define _GNU_SOURCE
+
+/*
+ * R610.57.04 / GB202 experiment for the private CLK_VF_POINTS control.
+ *
+ * The control object contains two 2048-entry BoardObj groups.  This tool only
+ * requests primary-group entries 127..253, which are the 127 XBAR voltage
+ * points established independently from CLK_VF_POINTS_GET_STATUS A/B data.
+ * It deliberately refuses every point whose returned type is not 0x11.
+ *
+ * --read       read only
+ * --dump-status PATH
+ *              read only and save the complete STATUS buffer
+ * --noop       submit the byte-identical XBAR preimage and verify it
+ * --probe-low  after a successful no-op, add 15000 kHz to XBAR point 0
+ *              (450 mV), read status, and immediately restore the preimage
+ * --sys-read|--sys-noop|--sys-probe-low
+ *              perform the matching operation on the hidden SYS point bank
+ */
+
+#include <errno.h>
+#include <fcntl.h>
+#include <inttypes.h>
+#include <signal.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
+
+#define NV_IOCTL_MAGIC 'F'
+#define NV_IOCTL_BASE 200
+#define NV_ESC_REGISTER_FD (NV_IOCTL_BASE + 1)
+#define NV_ESC_RM_FREE 0x29
+#define NV_ESC_RM_CONTROL 0x2a
+#define NV_ESC_RM_ALLOC 0x2b
+
+#define NV01_ROOT 0x00000000U
+#define NV01_DEVICE_0 0x00000080U
+#define NV20_SUBDEVICE_0 0x00002080U
+
+#define CLK_VF_POINTS_GET_CONTROL 0x20809023U
+#define CLK_VF_POINTS_SET_CONTROL 0x2080d024U
+#define CLK_VF_POINTS_GET_STATUS 0x20809022U
+#define CLK_VF_POINTS_CONTROL_SIZE 0x1020cU
+#define CLK_VF_POINTS_STATUS_SIZE 0x98208U
+
+#define CLK_DOMAINS_GET_CONTROL 0x2080901bU
+#define CLK_DOMAINS_SET_CONTROL 0x2080d01cU
+#define CLK_DOMAINS_CONTROL_SIZE 0x83cU
+#define DOMAIN_HEADER_SIZE 0x3cU
+#define DOMAIN_STRIDE 0x40U
+#define XBAR_DOMAIN_INDEX 1U
+#define FREQ_OFFSET_KHZ_OFFSET 0x0cU
+#define RAIL_OFFSET_BASE_OFFSET 0x10U
+#define MSVDD_RAIL_INDEX 1U
+#define CONTROLLABLE_DOMAIN_MASK 0x000000ffU
+
+#define PRIMARY_MASK_OFFSET 0x004U
+#define PRIMARY_RECORD_BASE 0x108U
+#define CONTROL_RECORD_STRIDE 0x010U
+#define CONTROL_TYPE_OFFSET 0x001U
+#define CONTROL_GUARD_OFFSET 0x004U
+#define CONTROL_FREQ_OFFSET_KHZ_OFFSET 0x008U
+
+#define STATUS_PRIMARY_RECORD_BASE 0x0d8U
+#define STATUS_RECORD_STRIDE 0x098U
+#define STATUS_TYPE_OFFSET 0x02cU
+#define STATUS_EFFECTIVE_VOLT_UV_OFFSET 0x030U
+#define STATUS_EFFECTIVE_FREQ_MHZ_OFFSET 0x034U
+#define STATUS_SOURCE_VOLT_UV_OFFSET 0x044U
+#define STATUS_TOTAL_FREQ_OFFSET_KHZ_OFFSET 0x080U
+#define STATUS_TOTAL_VOLT_OFFSET_UV_OFFSET 0x088U
+
+#define XBAR_FLAT_INDEX_FIRST 127U
+#define XBAR_POINT_COUNT 127U
+#define XBAR_FLAT_INDEX_LAST (XBAR_FLAT_INDEX_FIRST + XBAR_POINT_COUNT - 1U)
+#define SYS_FLAT_INDEX_FIRST 259U
+#define XBAR_POINT_TYPE_VOLT 0x11U
+#define FREQ_POINT_TYPE 0x0fU
+
+struct vf_bank {
+    const char *name;
+    uint32_t first;
+    uint32_t count;
+    uint8_t type;
+};
+
+static const struct vf_bank vf_banks[] = {
+    { "GPC",    0U, 127U, XBAR_POINT_TYPE_VOLT },
+    { "XBAR", 127U, 127U, XBAR_POINT_TYPE_VOLT },
+    { "MCLK", 254U,   5U, FREQ_POINT_TYPE },
+    { "SYS",  259U, 127U, XBAR_POINT_TYPE_VOLT },
+    { "NVD",  386U, 127U, XBAR_POINT_TYPE_VOLT },
+    { "PWR",  513U, 127U, XBAR_POINT_TYPE_VOLT },
+    { "PCIE", 640U,   8U, FREQ_POINT_TYPE },
+};
+
+typedef uint32_t NvHandle;
+typedef struct { int ctl_fd; } nv_ioctl_register_fd_t;
+
+typedef struct {
+    NvHandle hRoot;
+    NvHandle hObjectParent;
+    NvHandle hObjectOld;
+    uint32_t status;
+} NVOS00_PARAMETERS;
+
+typedef struct {
+    NvHandle hRoot;
+    NvHandle hObjectParent;
+    NvHandle hObjectNew;
+    uint32_t hClass;
+    uint64_t pAllocParms __attribute__((aligned(8)));
+    uint32_t paramsSize;
+    uint32_t status;
+} NVOS21_PARAMETERS;
+
+typedef struct {
+    NvHandle hClient;
+    NvHandle hObject;
+    uint32_t cmd;
+    uint32_t flags;
+    uint64_t params __attribute__((aligned(8)));
+    uint32_t paramsSize;
+    uint32_t status;
+} NVOS54_PARAMETERS;
+
+typedef struct {
+    uint32_t deviceId;
+    NvHandle hClientShare;
+    NvHandle hTargetClient;
+    NvHandle hTargetDevice;
+    uint32_t flags;
+    uint64_t vaSpaceSize __attribute__((aligned(8)));
+    uint64_t vaStartInternal __attribute__((aligned(8)));
+    uint64_t vaLimitInternal __attribute__((aligned(8)));
+    uint32_t vaMode;
+} NV0080_ALLOC_PARAMETERS;
+
+typedef struct { uint32_t subDeviceId; } NV2080_ALLOC_PARAMETERS;
+
+_Static_assert(sizeof(NVOS00_PARAMETERS) == 16, "NVOS00 ABI mismatch");
+_Static_assert(sizeof(NVOS21_PARAMETERS) == 32, "NVOS21 ABI mismatch");
+_Static_assert(sizeof(NVOS54_PARAMETERS) == 32, "NVOS54 ABI mismatch");
+_Static_assert(sizeof(NV0080_ALLOC_PARAMETERS) == 56,
+               "NV0080 ABI mismatch");
+
+static volatile sig_atomic_t stop_requested;
+
+static void request_stop(int signo)
+{
+    (void)signo;
+    stop_requested = 1;
+}
+
+static int rm_alloc(int fd, NVOS21_PARAMETERS *p)
+{
+    if (ioctl(fd, _IOWR(NV_IOCTL_MAGIC, NV_ESC_RM_ALLOC,
+                        NVOS21_PARAMETERS), p) < 0) {
+        fprintf(stderr, "NV_ESC_RM_ALLOC: %s\n", strerror(errno));
+        return -1;
+    }
+    if (p->status != 0) {
+        fprintf(stderr, "NV_ESC_RM_ALLOC status=0x%08x\n", p->status);
+        return -1;
+    }
+    return 0;
+}
+
+static void rm_free_root(int fd, NvHandle client)
+{
+    NVOS00_PARAMETERS p;
+    if (fd < 0 || client == 0)
+        return;
+    memset(&p, 0, sizeof(p));
+    p.hRoot = client;
+    p.hObjectParent = client;
+    p.hObjectOld = client;
+    (void)ioctl(fd, _IOWR(NV_IOCTL_MAGIC, NV_ESC_RM_FREE,
+                          NVOS00_PARAMETERS), &p);
+}
+
+static int rm_control(int fd, NvHandle client, NvHandle object,
+                      uint32_t cmd, void *params, uint32_t size)
+{
+    NVOS54_PARAMETERS control;
+    memset(&control, 0, sizeof(control));
+    control.hClient = client;
+    control.hObject = object;
+    control.cmd = cmd;
+    control.params = (uintptr_t)params;
+    control.paramsSize = size;
+    if (ioctl(fd, _IOWR(NV_IOCTL_MAGIC, NV_ESC_RM_CONTROL,
+                        NVOS54_PARAMETERS), &control) < 0) {
+        fprintf(stderr, "RM control 0x%08x ioctl: %s\n",
+                cmd, strerror(errno));
+        return -1;
+    }
+    if (control.status != 0) {
+        fprintf(stderr, "RM control 0x%08x status=0x%08x\n",
+                cmd, control.status);
+        return -1;
+    }
+    return 0;
+}
+
+static void mask_set(uint8_t *buffer, uint32_t index)
+{
+    uint32_t word;
+    const size_t off = PRIMARY_MASK_OFFSET + (index / 32U) * 4U;
+    memcpy(&word, buffer + off, sizeof(word));
+    word |= UINT32_C(1) << (index % 32U);
+    memcpy(buffer + off, &word, sizeof(word));
+}
+
+static void mask_set_bank(uint8_t *buffer, uint32_t first, uint32_t count)
+{
+    uint32_t index;
+    for (index = first; index < first + count; ++index)
+        mask_set(buffer, index);
+}
+
+static size_t control_record_offset(uint32_t flat_index)
+{
+    return PRIMARY_RECORD_BASE + (size_t)flat_index * CONTROL_RECORD_STRIDE;
+}
+
+static size_t status_record_offset(uint32_t flat_index)
+{
+    return STATUS_PRIMARY_RECORD_BASE +
+           (size_t)flat_index * STATUS_RECORD_STRIDE;
+}
+
+static uint32_t load_u32(const uint8_t *buffer, size_t off)
+{
+    uint32_t value;
+    memcpy(&value, buffer + off, sizeof(value));
+    return value;
+}
+
+static int32_t load_i32(const uint8_t *buffer, size_t off)
+{
+    int32_t value;
+    memcpy(&value, buffer + off, sizeof(value));
+    return value;
+}
+
+static void store_i32(uint8_t *buffer, size_t off, int32_t value)
+{
+    memcpy(buffer + off, &value, sizeof(value));
+}
+
+static int parse_i32(const char *text, int32_t *value)
+{
+    char *end = NULL;
+    long parsed;
+    errno = 0;
+    parsed = strtol(text, &end, 0);
+    if (errno != 0 || end == text || *end != '\0' ||
+        parsed < INT32_MIN || parsed > INT32_MAX)
+        return -1;
+    *value = (int32_t)parsed;
+    return 0;
+}
+
+static size_t domain_base(uint32_t index)
+{
+    return DOMAIN_HEADER_SIZE + (size_t)index * DOMAIN_STRIDE;
+}
+
+static int get_domain_control(int fd, NvHandle client, NvHandle subdevice,
+                              uint8_t *buffer)
+{
+    memset(buffer, 0, CLK_DOMAINS_CONTROL_SIZE);
+    memcpy(buffer + 4, &(uint32_t){ CONTROLLABLE_DOMAIN_MASK }, 4);
+    return rm_control(fd, client, subdevice, CLK_DOMAINS_GET_CONTROL,
+                      buffer, CLK_DOMAINS_CONTROL_SIZE);
+}
+
+static int set_domain_control(int fd, NvHandle client, NvHandle subdevice,
+                              uint8_t *buffer)
+{
+    return rm_control(fd, client, subdevice, CLK_DOMAINS_SET_CONTROL,
+                      buffer, CLK_DOMAINS_CONTROL_SIZE);
+}
+
+static int load_curve_csv(const char *path, int32_t offsets[XBAR_POINT_COUNT])
+{
+    FILE *stream = fopen(path, "r");
+    char line[512];
+    uint32_t expected = 0;
+    if (stream == NULL) {
+        fprintf(stderr, "open %s: %s\n", path, strerror(errno));
+        return -1;
+    }
+    if (fgets(line, sizeof(line), stream) == NULL) {
+        fprintf(stderr, "missing curve CSV header\n");
+        fclose(stream);
+        return -1;
+    }
+    line[strcspn(line, "\r\n")] = '\0';
+    if (strcmp(line, "point,source_voltage_mv,effective_voltage_mv,"
+                     "baseline_effective_mhz,compiled_effective_mhz,"
+                     "control_offset_khz") != 0) {
+        fprintf(stderr, "unexpected curve CSV header\n");
+        fclose(stream);
+        return -1;
+    }
+    while (fgets(line, sizeof(line), stream) != NULL) {
+        unsigned int point, source_mv, effective_mv, baseline_mhz, compiled_mhz;
+        int offset_khz;
+        if (sscanf(line, "%u,%u,%u,%u,%u,%d", &point, &source_mv,
+                   &effective_mv, &baseline_mhz, &compiled_mhz,
+                   &offset_khz) != 6 || point != expected ||
+            offset_khz < 0 || offset_khz > 2000000) {
+            fprintf(stderr, "invalid curve row %u\n", expected);
+            fclose(stream);
+            return -1;
+        }
+        offsets[expected++] = offset_khz;
+    }
+    fclose(stream);
+    if (expected != XBAR_POINT_COUNT) {
+        fprintf(stderr, "expected %u curve rows, got %u\n",
+                XBAR_POINT_COUNT, expected);
+        return -1;
+    }
+    return 0;
+}
+
+static int get_vf_control(int fd, NvHandle client, NvHandle subdevice,
+                          uint8_t *buffer, uint32_t first, uint32_t count)
+{
+    memset(buffer, 0, CLK_VF_POINTS_CONTROL_SIZE);
+    mask_set_bank(buffer, first, count);
+    return rm_control(fd, client, subdevice, CLK_VF_POINTS_GET_CONTROL,
+                      buffer, CLK_VF_POINTS_CONTROL_SIZE);
+}
+
+static int set_xbar_control(int fd, NvHandle client, NvHandle subdevice,
+                            uint8_t *buffer)
+{
+    return rm_control(fd, client, subdevice, CLK_VF_POINTS_SET_CONTROL,
+                      buffer, CLK_VF_POINTS_CONTROL_SIZE);
+}
+
+static int get_vf_status(int fd, NvHandle client, NvHandle subdevice,
+                         uint8_t *buffer, uint32_t first, uint32_t count)
+{
+    memset(buffer, 0, CLK_VF_POINTS_STATUS_SIZE);
+    mask_set_bank(buffer, first, count);
+    return rm_control(fd, client, subdevice, CLK_VF_POINTS_GET_STATUS,
+                      buffer, CLK_VF_POINTS_STATUS_SIZE);
+}
+
+static int validate_vf_control(const uint8_t *buffer, uint32_t first,
+                               uint32_t count, uint8_t expected_type)
+{
+    uint32_t index;
+    for (index = first; index < first + count; ++index) {
+        const size_t off = control_record_offset(index);
+        if (buffer[off + CONTROL_TYPE_OFFSET] != expected_type) {
+            fprintf(stderr,
+                    "refusing flat point %u: type=0x%02x, expected 0x%02x\n",
+                    index, buffer[off + CONTROL_TYPE_OFFSET], expected_type);
+            return -1;
+        }
+        if (buffer[off + CONTROL_GUARD_OFFSET] != 0) {
+            fprintf(stderr,
+                    "refusing flat point %u: guard byte=0x%02x\n",
+                    index, buffer[off + CONTROL_GUARD_OFFSET]);
+            return -1;
+        }
+    }
+    return 0;
+}
+
+static int compare_vf_records(const uint8_t *expected,
+                              const uint8_t *actual, uint32_t first,
+                              uint32_t count)
+{
+    uint32_t index;
+    for (index = first; index < first + count; ++index) {
+        const size_t off = control_record_offset(index);
+        if (memcmp(expected + off, actual + off,
+                   CONTROL_RECORD_STRIDE) != 0) {
+            fprintf(stderr, "control mismatch at flat point %u\n", index);
+            return -1;
+        }
+    }
+    return 0;
+}
+
+static void print_point(const char *label, const uint8_t *control,
+                        const uint8_t *status, uint32_t first, uint32_t point)
+{
+    const uint32_t flat = first + point;
+    const size_t co = control_record_offset(flat);
+    const size_t so = status_record_offset(flat);
+    printf("%s point=%u flat=%u control_type=0x%02x "
+           "control_freq_offset_khz=%" PRId32 " "
+           "status_type=0x%08" PRIx32 " source_uv=%" PRIu32 " "
+           "effective_uv=%" PRIu32 " effective_mhz=%" PRIu32 " "
+           "total_freq_offset_khz=%" PRId32 " total_volt_offset_uv=%" PRId32
+           "\n",
+           label, point, flat, control[co + CONTROL_TYPE_OFFSET],
+           load_i32(control, co + CONTROL_FREQ_OFFSET_KHZ_OFFSET),
+           load_u32(status, so + STATUS_TYPE_OFFSET),
+           load_u32(status, so + STATUS_SOURCE_VOLT_UV_OFFSET),
+           load_u32(status, so + STATUS_EFFECTIVE_VOLT_UV_OFFSET),
+           load_u32(status, so + STATUS_EFFECTIVE_FREQ_MHZ_OFFSET),
+           load_i32(status, so + STATUS_TOTAL_FREQ_OFFSET_KHZ_OFFSET),
+           load_i32(status, so + STATUS_TOTAL_VOLT_OFFSET_UV_OFFSET));
+}
+
+static int write_bank_csv(const char *path, const uint8_t *control,
+                          const uint8_t *status, uint32_t first,
+                          uint32_t count)
+{
+    FILE *stream = fopen(path, "w");
+    uint32_t point;
+    if (stream == NULL) {
+        fprintf(stderr, "open %s: %s\n", path, strerror(errno));
+        return -1;
+    }
+    fprintf(stream, "point,flat_index,control_type,control_freq_offset_khz,"
+                    "status_type,source_voltage_uv,effective_voltage_uv,"
+                    "base_freq_16_16_mhz,effective_freq_mhz,"
+                    "effective_freq_dup_mhz,effective_volt_dup_uv,"
+                    "total_freq_offset_khz,total_volt_offset_uv\n");
+    for (point = 0; point < count; ++point) {
+        const uint32_t flat = first + point;
+        const size_t co = control_record_offset(flat);
+        const size_t so = status_record_offset(flat);
+        fprintf(stream,
+                "%u,%u,%u,%" PRId32 ",%" PRIu32 ",%" PRIu32
+                ",%" PRIu32 ",%" PRIu32 ",%" PRIu32 ",%" PRIu32
+                ",%" PRIu32 ",%" PRId32 ",%" PRId32 "\n",
+                point, flat, control[co + CONTROL_TYPE_OFFSET],
+                load_i32(control, co + CONTROL_FREQ_OFFSET_KHZ_OFFSET),
+                load_u32(status, so + STATUS_TYPE_OFFSET),
+                load_u32(status, so + STATUS_SOURCE_VOLT_UV_OFFSET),
+                load_u32(status, so + STATUS_EFFECTIVE_VOLT_UV_OFFSET),
+                load_u32(status, so + 0x038U),
+                load_u32(status, so + STATUS_EFFECTIVE_FREQ_MHZ_OFFSET),
+                load_u32(status, so + 0x058U),
+                load_u32(status, so + 0x05cU),
+                load_i32(status, so + STATUS_TOTAL_FREQ_OFFSET_KHZ_OFFSET),
+                load_i32(status, so + STATUS_TOTAL_VOLT_OFFSET_UV_OFFSET));
+    }
+    if (fclose(stream) != 0) {
+        fprintf(stderr, "close %s: %s\n", path, strerror(errno));
+        return -1;
+    }
+    printf("saved %u-point bank CSV: %s\n", count, path);
+    return 0;
+}
+
+static int verify_bank_shift(const uint8_t *control_before,
+                             const uint8_t *control_after,
+                             const uint8_t *status_before,
+                             const uint8_t *status_after,
+                             uint32_t first, uint32_t count,
+                             int32_t delta_khz)
+{
+    uint32_t point;
+    unsigned int control_ok = 0, effective_exact = 0, total_exact = 0;
+    unsigned int effective_changed = 0, effective_same = 0;
+    unsigned int total_changed = 0, total_same = 0;
+    unsigned int effective_opposite = 0, total_opposite = 0;
+    int64_t effective_min = INT64_MAX, effective_max = INT64_MIN;
+    int64_t total_min = INT64_MAX, total_max = INT64_MIN;
+    int64_t effective_values[127], total_values[127];
+    unsigned int effective_counts[127] = { 0 }, total_counts[127] = { 0 };
+    unsigned int effective_unique = 0, total_unique = 0;
+    if (delta_khz % 1000 != 0) {
+        fprintf(stderr, "bank shift must use whole MHz for STATUS validation\n");
+        return -1;
+    }
+    for (point = 0; point < count; ++point) {
+        const uint32_t flat = first + point;
+        const size_t co = control_record_offset(flat);
+        const size_t so = status_record_offset(flat);
+        const int32_t old_control = load_i32(
+                control_before, co + CONTROL_FREQ_OFFSET_KHZ_OFFSET);
+        const int32_t new_control = load_i32(
+                control_after, co + CONTROL_FREQ_OFFSET_KHZ_OFFSET);
+        const int64_t expected_control = (int64_t)old_control + delta_khz;
+        const int64_t effective_delta =
+                (int64_t)load_u32(status_after,
+                                  so + STATUS_EFFECTIVE_FREQ_MHZ_OFFSET) -
+                load_u32(status_before,
+                         so + STATUS_EFFECTIVE_FREQ_MHZ_OFFSET);
+        const int64_t total_delta =
+                (int64_t)load_i32(status_after,
+                                  so + STATUS_TOTAL_FREQ_OFFSET_KHZ_OFFSET) -
+                load_i32(status_before,
+                         so + STATUS_TOTAL_FREQ_OFFSET_KHZ_OFFSET);
+        if (new_control == expected_control)
+            ++control_ok;
+        else
+            fprintf(stderr, "flat %u control shift mismatch: %d -> %d\n",
+                    flat, old_control, new_control);
+        if (effective_delta == delta_khz / 1000)
+            ++effective_exact;
+        if (total_delta == delta_khz)
+            ++total_exact;
+        if (effective_delta == 0)
+            ++effective_same;
+        else
+            ++effective_changed;
+        if (total_delta == 0)
+            ++total_same;
+        else
+            ++total_changed;
+        if ((delta_khz < 0 && effective_delta > 0) ||
+            (delta_khz > 0 && effective_delta < 0))
+            ++effective_opposite;
+        if ((delta_khz < 0 && total_delta > 0) ||
+            (delta_khz > 0 && total_delta < 0))
+            ++total_opposite;
+        if (effective_delta < effective_min)
+            effective_min = effective_delta;
+        if (effective_delta > effective_max)
+            effective_max = effective_delta;
+        if (total_delta < total_min)
+            total_min = total_delta;
+        if (total_delta > total_max)
+            total_max = total_delta;
+        {
+            unsigned int i;
+            for (i = 0; i < effective_unique; ++i)
+                if (effective_values[i] == effective_delta)
+                    break;
+            if (i == effective_unique)
+                effective_values[effective_unique++] = effective_delta;
+            ++effective_counts[i];
+            for (i = 0; i < total_unique; ++i)
+                if (total_values[i] == total_delta)
+                    break;
+            if (i == total_unique)
+                total_values[total_unique++] = total_delta;
+            ++total_counts[i];
+        }
+    }
+    printf("bank shift verification: control_exact=%u/%u requested=%" PRId32
+           " kHz\n", control_ok, count, delta_khz);
+    printf("effective: changed=%u same=%u opposite=%u exact=%u/%u "
+           "range=%" PRId64 "..%" PRId64 " MHz distribution=",
+           effective_changed, effective_same, effective_opposite,
+           effective_exact, count, effective_min, effective_max);
+    for (unsigned int i = 0; i < effective_unique; ++i)
+        printf("%s%" PRId64 ":%u", i == 0 ? "" : ",",
+               effective_values[i], effective_counts[i]);
+    putchar('\n');
+    printf("total_offset: changed=%u same=%u opposite=%u exact=%u/%u "
+           "range=%" PRId64 "..%" PRId64 " kHz distribution=",
+           total_changed, total_same, total_opposite, total_exact, count,
+           total_min, total_max);
+    for (unsigned int i = 0; i < total_unique; ++i)
+        printf("%s%" PRId64 ":%u", i == 0 ? "" : ",",
+               total_values[i], total_counts[i]);
+    putchar('\n');
+    return control_ok == count && effective_opposite == 0 &&
+           total_opposite == 0 ? 0 : -1;
+}
+
+int main(int argc, char **argv)
+{
+    enum { MODE_READ, MODE_DUMP_STATUS, MODE_DUMP_BANK_CSV, MODE_NOOP,
+           MODE_PROBE_LOW, MODE_SHIFT_BANK, MODE_APPLY_CURVE } mode = MODE_READ;
+    const char *dump_status_path = NULL;
+    const char *curve_path = NULL;
+    const char *bank_name = "XBAR";
+    uint32_t flat_first = XBAR_FLAT_INDEX_FIRST;
+    uint32_t point_count = XBAR_POINT_COUNT;
+    uint32_t probe_point = 0;
+    uint8_t expected_point_type = XBAR_POINT_TYPE_VOLT;
+    unsigned int hold_seconds = 0;
+    int32_t requested_msvdd_uv = 0;
+    int32_t requested_bank_delta_khz = 0;
+    int32_t curve_offsets[XBAR_POINT_COUNT];
+    int rc = EXIT_FAILURE;
+    int ctl = -1, card = -1;
+    int changed = 0, changed_domain = 0;
+    NvHandle client = 0, subdevice_handle = 0;
+    uint8_t *before = NULL, *work = NULL, *readback = NULL;
+    uint8_t *status_before = NULL, *status_after = NULL;
+    uint8_t domain_before[CLK_DOMAINS_CONTROL_SIZE];
+    uint8_t domain_work[CLK_DOMAINS_CONTROL_SIZE];
+    uint8_t domain_readback[CLK_DOMAINS_CONTROL_SIZE];
+
+    if (argc == 2 && strcmp(argv[1], "--read") == 0)
+        mode = MODE_READ;
+    else if (argc == 3 && strcmp(argv[1], "--dump-status") == 0) {
+        mode = MODE_DUMP_STATUS;
+        dump_status_path = argv[2];
+    }
+    else if (argc == 2 && strcmp(argv[1], "--noop") == 0)
+        mode = MODE_NOOP;
+    else if (argc == 2 && strcmp(argv[1], "--probe-low") == 0)
+        mode = MODE_PROBE_LOW;
+    else if (argc == 2 && strcmp(argv[1], "--sys-read") == 0) {
+        mode = MODE_READ;
+        bank_name = "SYS";
+        flat_first = SYS_FLAT_INDEX_FIRST;
+    }
+    else if (argc == 2 && strcmp(argv[1], "--sys-noop") == 0) {
+        mode = MODE_NOOP;
+        bank_name = "SYS";
+        flat_first = SYS_FLAT_INDEX_FIRST;
+    }
+    else if (argc == 2 && strcmp(argv[1], "--sys-probe-low") == 0) {
+        mode = MODE_PROBE_LOW;
+        bank_name = "SYS";
+        flat_first = SYS_FLAT_INDEX_FIRST;
+    }
+    else if ((argc == 3 &&
+              (strcmp(argv[1], "--bank-read") == 0 ||
+               strcmp(argv[1], "--bank-noop") == 0 ||
+               strcmp(argv[1], "--bank-probe-low") == 0)) ||
+             (argc == 4 &&
+              (strcmp(argv[1], "--bank-probe") == 0 ||
+               strcmp(argv[1], "--bank-csv") == 0 ||
+               strcmp(argv[1], "--bank-shift") == 0))) {
+        size_t i;
+        const struct vf_bank *selected = NULL;
+        for (i = 0; i < sizeof(vf_banks) / sizeof(vf_banks[0]); ++i) {
+            if (strcasecmp(argv[2], vf_banks[i].name) == 0) {
+                selected = &vf_banks[i];
+                break;
+            }
+        }
+        if (selected == NULL) {
+            fprintf(stderr, "unknown VF bank: %s\n", argv[2]);
+            return EXIT_FAILURE;
+        }
+        mode = strcmp(argv[1], "--bank-read") == 0 ? MODE_READ :
+               strcmp(argv[1], "--bank-noop") == 0 ? MODE_NOOP :
+               strcmp(argv[1], "--bank-csv") == 0 ? MODE_DUMP_BANK_CSV :
+               strcmp(argv[1], "--bank-shift") == 0 ? MODE_SHIFT_BANK :
+                                                       MODE_PROBE_LOW;
+        bank_name = selected->name;
+        flat_first = selected->first;
+        point_count = selected->count;
+        expected_point_type = selected->type;
+        if (argc == 4 && strcmp(argv[1], "--bank-probe") == 0) {
+            char *end = NULL;
+            unsigned long value;
+            errno = 0;
+            value = strtoul(argv[3], &end, 0);
+            if (errno != 0 || end == argv[3] || *end != '\0' ||
+                value >= point_count) {
+                fprintf(stderr, "invalid point for %s bank: %s\n",
+                        bank_name, argv[3]);
+                return EXIT_FAILURE;
+            }
+            probe_point = (uint32_t)value;
+        }
+        if (argc == 4 && strcmp(argv[1], "--bank-csv") == 0)
+            dump_status_path = argv[3];
+        if (argc == 4 && strcmp(argv[1], "--bank-shift") == 0) {
+            if (expected_point_type != XBAR_POINT_TYPE_VOLT) {
+                fprintf(stderr, "%s is not a type-0x11 voltage-point bank\n",
+                        bank_name);
+                return EXIT_FAILURE;
+            }
+            if (parse_i32(argv[3], &requested_bank_delta_khz) != 0 ||
+                requested_bank_delta_khz < -2000 ||
+                requested_bank_delta_khz > 2000 ||
+                requested_bank_delta_khz == 0 ||
+                requested_bank_delta_khz % 1000 != 0) {
+                fprintf(stderr, "bank shift must be -2000, -1000, 1000, "
+                                "or 2000 kHz\n");
+                return EXIT_FAILURE;
+            }
+        }
+    }
+    else if (argc == 5 && strcmp(argv[1], "--apply-csv") == 0) {
+        char *end = NULL;
+        long msvdd;
+        unsigned long hold;
+        errno = 0;
+        msvdd = strtol(argv[3], &end, 0);
+        if (errno != 0 || end == argv[3] || *end != '\0' ||
+            msvdd < -200000 || msvdd > 200000) {
+            fprintf(stderr, "invalid MSVDD offset\n");
+            return EXIT_FAILURE;
+        }
+        requested_msvdd_uv = (int32_t)msvdd;
+        errno = 0;
+        hold = strtoul(argv[4], &end, 0);
+        if (errno != 0 || end == argv[4] || *end != '\0' || hold > 3600) {
+            fprintf(stderr, "invalid hold duration\n");
+            return EXIT_FAILURE;
+        }
+        curve_path = argv[2];
+        hold_seconds = (unsigned int)hold;
+        if (load_curve_csv(curve_path, curve_offsets) != 0)
+            return EXIT_FAILURE;
+        mode = MODE_APPLY_CURVE;
+    }
+    else {
+        fprintf(stderr, "usage: %s --read|--dump-status PATH|--noop|--probe-low\n"
+                        "       %s --sys-read|--sys-noop|--sys-probe-low\n"
+                        "       %s --bank-read|--bank-noop|--bank-probe-low BANK\n"
+                        "       %s --bank-probe BANK POINT\n"
+                        "       %s --bank-csv BANK PATH\n"
+                        "       %s --bank-shift BANK DELTA_KHZ\n"
+                        "       %s --apply-csv PATH MSVDD_OFFSET_UV SECONDS\n",
+                argv[0],
+                argv[0],
+                argv[0],
+                argv[0],
+                argv[0],
+                argv[0],
+                argv[0]);
+        return EXIT_FAILURE;
+    }
+
+    signal(SIGINT, request_stop);
+    signal(SIGTERM, request_stop);
+
+    before = calloc(1, CLK_VF_POINTS_CONTROL_SIZE);
+    work = calloc(1, CLK_VF_POINTS_CONTROL_SIZE);
+    readback = calloc(1, CLK_VF_POINTS_CONTROL_SIZE);
+    status_before = calloc(1, CLK_VF_POINTS_STATUS_SIZE);
+    status_after = calloc(1, CLK_VF_POINTS_STATUS_SIZE);
+    if (before == NULL || work == NULL || readback == NULL ||
+        status_before == NULL || status_after == NULL) {
+        fprintf(stderr, "allocation failed: %s\n", strerror(errno));
+        goto out;
+    }
+
+    ctl = open("/dev/nvidiactl", O_RDWR | O_CLOEXEC);
+    card = open("/dev/nvidia0", O_RDWR | O_CLOEXEC);
+    if (ctl < 0 || card < 0) {
+        fprintf(stderr, "open NVIDIA device: %s\n", strerror(errno));
+        goto out;
+    }
+
+    {
+        nv_ioctl_register_fd_t regfd = { .ctl_fd = ctl };
+        if (ioctl(card, _IOWR(NV_IOCTL_MAGIC, NV_ESC_REGISTER_FD,
+                              nv_ioctl_register_fd_t), &regfd) < 0) {
+            fprintf(stderr, "NV_ESC_REGISTER_FD: %s\n", strerror(errno));
+            goto out;
+        }
+    }
+
+    {
+        NVOS21_PARAMETERS root;
+        memset(&root, 0, sizeof(root));
+        root.hClass = NV01_ROOT;
+        if (rm_alloc(ctl, &root) != 0)
+            goto out;
+        client = root.hObjectNew;
+    }
+    {
+        NV0080_ALLOC_PARAMETERS device_params;
+        NVOS21_PARAMETERS device;
+        memset(&device_params, 0, sizeof(device_params));
+        memset(&device, 0, sizeof(device));
+        device.hRoot = client;
+        device.hObjectParent = client;
+        device.hClass = NV01_DEVICE_0;
+        device.pAllocParms = (uintptr_t)&device_params;
+        device.paramsSize = sizeof(device_params);
+        if (rm_alloc(ctl, &device) != 0)
+            goto out;
+        {
+            NV2080_ALLOC_PARAMETERS subdevice_params;
+            NVOS21_PARAMETERS subdevice;
+            memset(&subdevice_params, 0, sizeof(subdevice_params));
+            memset(&subdevice, 0, sizeof(subdevice));
+            subdevice.hRoot = client;
+            subdevice.hObjectParent = device.hObjectNew;
+            subdevice.hClass = NV20_SUBDEVICE_0;
+            subdevice.pAllocParms = (uintptr_t)&subdevice_params;
+            subdevice.paramsSize = sizeof(subdevice_params);
+            if (rm_alloc(ctl, &subdevice) != 0)
+                goto out;
+            subdevice_handle = subdevice.hObjectNew;
+        }
+    }
+
+    if (get_vf_control(ctl, client, subdevice_handle, before, flat_first,
+                       point_count) != 0 ||
+        validate_vf_control(before, flat_first, point_count,
+                            expected_point_type) != 0 ||
+        get_vf_status(ctl, client, subdevice_handle, status_before,
+                      flat_first, point_count) != 0)
+        goto out;
+    print_point("before", before, status_before, flat_first, 0);
+    print_point("before", before, status_before, flat_first, point_count / 2U);
+    print_point("before", before, status_before, flat_first, point_count - 1U);
+
+    if (mode == MODE_DUMP_STATUS) {
+        FILE *stream = fopen(dump_status_path, "wb");
+        if (stream == NULL) {
+            fprintf(stderr, "open %s: %s\n", dump_status_path, strerror(errno));
+            goto out;
+        }
+        if (fwrite(status_before, 1, CLK_VF_POINTS_STATUS_SIZE, stream) !=
+                CLK_VF_POINTS_STATUS_SIZE || fclose(stream) != 0) {
+            fprintf(stderr, "write %s: %s\n", dump_status_path, strerror(errno));
+            goto out;
+        }
+        printf("saved STATUS: %s (0x%x bytes)\n", dump_status_path,
+               CLK_VF_POINTS_STATUS_SIZE);
+        rc = EXIT_SUCCESS;
+        goto out;
+    }
+
+    if (mode == MODE_DUMP_BANK_CSV) {
+        if (write_bank_csv(dump_status_path, before, status_before,
+                           flat_first, point_count) != 0)
+            goto out;
+        rc = EXIT_SUCCESS;
+        goto out;
+    }
+
+    if (mode == MODE_READ) {
+        rc = EXIT_SUCCESS;
+        goto out;
+    }
+
+    memcpy(work, before, CLK_VF_POINTS_CONTROL_SIZE);
+    if (set_xbar_control(ctl, client, subdevice_handle, work) != 0)
+        goto out;
+    if (get_vf_control(ctl, client, subdevice_handle, readback,
+                       flat_first, point_count) != 0 ||
+        validate_vf_control(readback, flat_first, point_count,
+                            expected_point_type) != 0 ||
+        compare_vf_records(before, readback, flat_first, point_count) != 0) {
+        fprintf(stderr, "no-op readback failed\n");
+        goto out;
+    }
+    printf("no-op readback: byte-identical %s records\n", bank_name);
+
+    if (mode == MODE_NOOP) {
+        rc = EXIT_SUCCESS;
+        goto out;
+    }
+
+    if (mode == MODE_APPLY_CURVE) {
+        const size_t xbar = domain_base(XBAR_DOMAIN_INDEX);
+        const size_t freq_off = xbar + FREQ_OFFSET_KHZ_OFFSET;
+        const size_t msvdd_off = xbar + RAIL_OFFSET_BASE_OFFSET +
+                                 MSVDD_RAIL_INDEX * sizeof(int32_t);
+        int32_t current_freq, current_msvdd, readback_freq, readback_msvdd;
+        uint32_t point;
+        if (get_domain_control(ctl, client, subdevice_handle,
+                               domain_before) != 0)
+            goto out;
+        current_freq = load_i32(domain_before, freq_off);
+        current_msvdd = load_i32(domain_before, msvdd_off);
+        if (current_freq != 0 || current_msvdd != 0) {
+            fprintf(stderr, "refusing nonzero domain preimage: XBAR=%d kHz "
+                            "MSVDD=%d uV\n", current_freq, current_msvdd);
+            goto out;
+        }
+        memcpy(domain_work, domain_before, sizeof(domain_work));
+        store_i32(domain_work, msvdd_off, requested_msvdd_uv);
+        if (set_domain_control(ctl, client, subdevice_handle,
+                               domain_work) != 0)
+            goto out;
+        changed_domain = 1;
+        if (get_domain_control(ctl, client, subdevice_handle,
+                               domain_readback) != 0)
+            goto out;
+        readback_freq = load_i32(domain_readback, freq_off);
+        readback_msvdd = load_i32(domain_readback, msvdd_off);
+        if (readback_freq != 0 || readback_msvdd != requested_msvdd_uv) {
+            fprintf(stderr, "domain readback mismatch: XBAR=%d MSVDD=%d\n",
+                    readback_freq, readback_msvdd);
+            goto out;
+        }
+        printf("domain applied: XBAR=%d kHz MSVDD=%d uV\n",
+               readback_freq, readback_msvdd);
+
+        memcpy(work, before, CLK_VF_POINTS_CONTROL_SIZE);
+        for (point = 0; point < XBAR_POINT_COUNT; ++point) {
+            const size_t off = control_record_offset(
+                    XBAR_FLAT_INDEX_FIRST + point) +
+                    CONTROL_FREQ_OFFSET_KHZ_OFFSET;
+            store_i32(work, off, curve_offsets[point]);
+        }
+        if (set_xbar_control(ctl, client, subdevice_handle, work) != 0)
+            goto out;
+        changed = 1;
+        if (get_vf_control(ctl, client, subdevice_handle, readback,
+                           flat_first, point_count) != 0 ||
+            compare_vf_records(work, readback, flat_first,
+                               point_count) != 0 ||
+            get_vf_status(ctl, client, subdevice_handle, status_after,
+                          flat_first, point_count) != 0)
+            goto out;
+        print_point("applied", readback, status_after, flat_first, 0);
+        print_point("applied", readback, status_after, flat_first, 79);
+        print_point("applied", readback, status_after, flat_first, 80);
+        print_point("applied", readback, status_after, flat_first, 126);
+        fflush(stdout);
+        for (unsigned int i = 0; i < hold_seconds * 10U && !stop_requested;
+             ++i)
+            usleep(100000);
+        rc = EXIT_SUCCESS;
+        goto out;
+    }
+
+    if (mode == MODE_SHIFT_BANK) {
+        uint32_t point;
+        memcpy(work, before, CLK_VF_POINTS_CONTROL_SIZE);
+        for (point = 0; point < point_count; ++point) {
+            const size_t off = control_record_offset(flat_first + point) +
+                               CONTROL_FREQ_OFFSET_KHZ_OFFSET;
+            const int32_t old_offset = load_i32(work, off);
+            const int64_t shifted = (int64_t)old_offset +
+                                    requested_bank_delta_khz;
+            if (shifted < INT32_MIN || shifted > INT32_MAX) {
+                fprintf(stderr, "flat %u shift overflow\n",
+                        flat_first + point);
+                goto out;
+            }
+            store_i32(work, off, (int32_t)shifted);
+        }
+        changed = 1;
+        if (set_xbar_control(ctl, client, subdevice_handle, work) != 0)
+            goto restore;
+        if (get_vf_control(ctl, client, subdevice_handle, readback,
+                           flat_first, point_count) != 0 ||
+            get_vf_status(ctl, client, subdevice_handle, status_after,
+                          flat_first, point_count) != 0 ||
+            verify_bank_shift(before, readback, status_before, status_after,
+                              flat_first, point_count,
+                              requested_bank_delta_khz) != 0)
+            goto restore;
+        print_point("shifted", readback, status_after, flat_first, 0);
+        print_point("shifted", readback, status_after, flat_first,
+                    point_count / 2U);
+        print_point("shifted", readback, status_after, flat_first,
+                    point_count - 1U);
+        goto restore;
+    }
+
+    if (stop_requested) {
+        fprintf(stderr, "stop requested before probe\n");
+        goto out;
+    }
+
+    memcpy(work, before, CLK_VF_POINTS_CONTROL_SIZE);
+    {
+        const size_t off = control_record_offset(flat_first + probe_point) +
+                           CONTROL_FREQ_OFFSET_KHZ_OFFSET;
+        const int32_t old_offset = load_i32(work, off);
+        if (old_offset > INT32_MAX - 15000) {
+            fprintf(stderr, "low-point offset overflow\n");
+            goto out;
+        }
+        store_i32(work, off, old_offset + 15000);
+    }
+    changed = 1;
+    if (set_xbar_control(ctl, client, subdevice_handle, work) != 0)
+        goto restore;
+    if (get_vf_control(ctl, client, subdevice_handle, readback,
+                       flat_first, point_count) != 0 ||
+        get_vf_status(ctl, client, subdevice_handle, status_after,
+                      flat_first, point_count) != 0)
+        goto restore;
+    print_point("probe", readback, status_after, flat_first, probe_point);
+
+restore:
+    if (changed) {
+        if (set_xbar_control(ctl, client, subdevice_handle, before) != 0) {
+            fprintf(stderr, "RESTORE FAILED\n");
+            goto out;
+        }
+        changed = 0;
+        if (get_vf_control(ctl, client, subdevice_handle, readback,
+                           flat_first, point_count) != 0 ||
+            compare_vf_records(before, readback, flat_first,
+                               point_count) != 0 ||
+            get_vf_status(ctl, client, subdevice_handle, status_after,
+                          flat_first, point_count) != 0) {
+            fprintf(stderr, "restore readback mismatch\n");
+            goto out;
+        }
+        print_point("restored", readback, status_after, flat_first,
+                    probe_point);
+    }
+    rc = EXIT_SUCCESS;
+
+out:
+    if (changed && before != NULL && ctl >= 0 && client != 0 &&
+        subdevice_handle != 0) {
+        if (set_xbar_control(ctl, client, subdevice_handle, before) != 0) {
+            fprintf(stderr, "emergency restore failed\n");
+            rc = EXIT_FAILURE;
+        } else {
+            changed = 0;
+            puts("curve restored");
+        }
+    }
+    if (changed_domain && ctl >= 0 && client != 0 &&
+        subdevice_handle != 0) {
+        if (set_domain_control(ctl, client, subdevice_handle,
+                               domain_before) != 0) {
+            fprintf(stderr, "domain restore failed\n");
+            rc = EXIT_FAILURE;
+        } else {
+            changed_domain = 0;
+            puts("domain restored");
+        }
+    }
+    rm_free_root(ctl, client);
+    if (ctl >= 0)
+        close(ctl);
+    if (card >= 0)
+        close(card);
+    free(before);
+    free(work);
+    free(readback);
+    free(status_before);
+    free(status_after);
+    return rc;
+}

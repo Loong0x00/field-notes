@@ -1,0 +1,25 @@
+before: xbar_offset_khz=0 xbar_msvdd_offset_uv=0 measured_xbar_khz=1455422
+SET_CONTROL status=0x00000000
+readback: xbar_offset_khz=0 xbar_msvdd_offset_uv=1000 measured_xbar_khz=1441231
+sample=0 measured_xbar_khz=1440320
+sample=1 measured_xbar_khz=1439003
+sample=2 measured_xbar_khz=2429968
+sample=3 measured_xbar_khz=2428740
+sample=4 measured_xbar_khz=2354945
+sample=5 measured_xbar_khz=1439682
+sample=6 measured_xbar_khz=1440592
+sample=7 measured_xbar_khz=1439826
+sample=8 measured_xbar_khz=1440040
+sample=9 measured_xbar_khz=1440261
+sample=10 measured_xbar_khz=1439780
+sample=11 measured_xbar_khz=1440341
+sample=12 measured_xbar_khz=1439386
+sample=13 measured_xbar_khz=1441112
+sample=14 measured_xbar_khz=1463132
+sample=15 measured_xbar_khz=2428416
+sample=16 measured_xbar_khz=1439143
+sample=17 measured_xbar_khz=1440158
+sample=18 measured_xbar_khz=1439697
+sample=19 measured_xbar_khz=1442258
+SET_CONTROL status=0x00000000
+restored: xbar_offset_khz=0 xbar_msvdd_offset_uv=0 measured_xbar_khz=1455503
